@@ -1,10 +1,9 @@
 package handlers
 
 import (
-	"fmt"
-	"net/http"
+	"github.com/kataras/iris/v12"
 )
 
-func IndexHandler(w http.ResponseWriter, r *http.Request) {
-    fmt.Fprintln(w, "何が起こすかな...")
+func IndexHandler(c iris.Context) {
+    c.View("index.html")
 }
