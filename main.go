@@ -10,6 +10,6 @@ import (
 func main() {
     app := iris.New()
     app.Get("/", handlers.IndexHandler)
-    err := app.Run(iris.AutoTLS(":443", "", "syume1237@gmail.com"))
+    err := app.Run(iris.AutoTLS("0.0.0.0:443", "", "syume1237@gmail.com"))
     log.Fatal(err)
 }
