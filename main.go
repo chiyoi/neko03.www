@@ -2,22 +2,37 @@ package main
 
 import (
 	"log"
+	"net/http"
+	"os"
+	"path/filepath"
 
-	"github.com/kataras/iris/v12"
+	"neko03.com/www/pages"
 )
 
-var app = iris.New()
-var templates = iris.HTML("./templates", ".html")
+var root = filepath.Dir(Must(os.Executable()))
 
 func init() {
-    templates.Reload(true)
-    app.RegisterView(templates)
+	pages.Init(root)
+	registerFileServer()
+	registerHandlers()
 }
 
 func main() {
-    app.Get("/", index)
-    //app.Favicon("./assets/favicon.ico")
+	log.Println("listen on :8080")
+	err := http.ListenAndServe(":8080", nil)
+	log.Fatal(err)
+}
 
-    err := app.Listen(":80")
-    log.Fatal(err)
+func registerFileServer() {
+	fs := http.FileServer(http.Dir("./assets"))
+	http.Handle("/assets/", http.StripPrefix("/assets/", fs))
+}
+func registerHandlers() {
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/" {
+			http.NotFound(w, r)
+			return
+		}
+		pages.Index(w, r)
+	})
 }
