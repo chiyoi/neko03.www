@@ -18,8 +18,8 @@ func init() {
 }
 
 func main() {
-	log.Println("listen on :8080")
-	err := http.ListenAndServe(":8080", nil)
+	log.Println("listen on :80")
+	err := http.ListenAndServe(":80", nil)
 	log.Fatal(err)
 }
 
