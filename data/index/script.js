@@ -18,6 +18,7 @@ function buildApp() {
     setScale(icon, "150px", "150px")
     icon.src = "/assets/icon.png"
     icon.style.clipPath = "circle(50%)"
+    disablePointer(icon)
     icon_frame.appendChild(icon)
     var disp = document.createElement("div")
     setScale(disp, "150px", "50px")
