@@ -1,4 +1,5 @@
 function main() {
+    window.oncontextmenu = function(){return false}
     var html = document.getElementsByTagName("html")[0]
     html.setAttribute("lang", "en-US")
     var body = document.getElementsByTagName("body")[0]
