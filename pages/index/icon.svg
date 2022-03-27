@@ -1,8 +1,0 @@
-{{define "menu-icon"}}
-    <svg width="30" height="30">
-        <rect id="path1" x="0" y="0" width="30" height="6" />
-        <rect id="path2" x="0" y="12" width="30" height="6" />
-        <rect id="path3" x="0" y="12" width="30" height="6" />
-        <rect id="path4" x="0" y="24" width="30" height="6" />
-    </svg>
-{{end}}

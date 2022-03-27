@@ -3,16 +3,11 @@ package main
 import (
 	"log"
 	"net/http"
-	"os"
-	"path/filepath"
 
-	"neko03.com/www/pages"
+	"neko03.com/www/handlers"
 )
 
-var root = filepath.Dir(Must(os.Executable()))
-
 func init() {
-	pages.Init(root)
 	registerFileServer()
 	registerHandlers()
 }
@@ -33,6 +28,6 @@ func registerHandlers() {
 			http.NotFound(w, r)
 			return
 		}
-		pages.Index(w, r)
+		handlers.Index(w, r)
 	})
 }
