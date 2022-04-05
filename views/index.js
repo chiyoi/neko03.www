@@ -8,7 +8,7 @@ else{node=node_;}}
 return node;}
 class modify{constructor(node){this.node=node;}
 setAttr(attribute,value){this.node.setAttribute(attribute,value);return this;}
-setStyle(style,value){if(typeof style==="string"){let converted=style.replace(/(?=[A-Z])/,"-").toLowerCase();if(converted.startsWith("webkit")){converted=`-${converted}`;}
+setStyle(style,value){if(typeof style==="string"){let converted=style.replace(/(?=[A-Z])/g,"-").toLowerCase();if(converted.startsWith("webkit")){converted=`-${converted}`;}
 this.node.style.setProperty(converted,value);}
 else{throw new Error("wrong style name error");}
 return this;}
