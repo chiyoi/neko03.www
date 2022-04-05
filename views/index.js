@@ -8,7 +8,8 @@ else{node=node_;}}
 return node;}
 class modify{constructor(node){this.node=node;}
 setAttr(attribute,value){this.node.setAttribute(attribute,value);return this;}
-setStyle(style,value){if(typeof style==="string"){this.node.style.setProperty(style.replace(/(?=[A-Z])/,"-").toLowerCase(),value);}
+setStyle(style,value){if(typeof style==="string"){let converted=style.replace(/(?=[A-Z])/,"-").toLowerCase();if(converted.startsWith("webkit")){converted=`-${converted}`;}
+this.node.style.setProperty(converted,value);}
 else{throw new Error("wrong style name error");}
 return this;}
 appendStyle(style,value){if(typeof style==="string"){let current=this.node.style.getPropertyValue(style);this.setStyle(style,current+value);}
@@ -17,7 +18,7 @@ return this;}
 setScale(width,height){this.setStyle("width",width).setStyle("height",height);return this;}
 setContent(content){this.node.textContent=content;return this;}
 centralize(){this.setStyle("position","relative").setStyle("top","50%").setStyle("left","50%").appendStyle("transform","translate(-50%,-50%)");return this;}
-disablePointer(){this.setStyle("pointerEvents","node").setStyle("webkitUserSelect","none");return this;}}
+disablePointer(){this.setStyle("pointerEvents","none").setStyle("webkitUserSelect","none");return this;}}
 class append{constructor(node){this.node=node;}
 tag(tagName,attribute,content){let child=document.createElement(tagName);attribute&&attribute.forEach((value,key)=>child.setAttribute(key,value));content&&(child.textContent=content);this.node.appendChild(child);return this;}
 child(child){this.node.appendChild(child);return this;}}
