@@ -30,9 +30,7 @@ func makeHttpsServer() (*autocert.Manager, *http.Server) {
 		Prompt: autocert.AcceptTOS,
 		HostPolicy: autocert.HostWhitelist("www.neko03.com"),
 	}
-	if cacheDir := makeCacheDir(); cacheDir != "" {
-		certManager.Cache = autocert.DirCache(cacheDir)
-	}
+	certManager.Cache = autocert.DirCache(makeCacheDir())
 	server := &http.Server{
 		Addr: ":https",
 		TLSConfig: &tls.Config{
@@ -42,9 +40,7 @@ func makeHttpsServer() (*autocert.Manager, *http.Server) {
 	return certManager, server
 }
 func makeCacheDir() string {
-	dir := filepath.Join(os.TempDir(), "cache-golang-autocert")
-	if err := os.MkdirAll(dir, 0700); err == nil {
-		return dir
-	}
-	return ""
+	dir := filepath.Join("/certCache", "cache-golang-autocert")
+	Assert(os.MkdirAll(dir, 0700))
+	return dir
 }
