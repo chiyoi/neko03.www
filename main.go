@@ -5,42 +5,41 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 
 	"golang.org/x/crypto/acme/autocert"
 )
 
 func init() {
-	registerFileServer()
-	registerHandlers()
+    registerFileServer()
+    registerHandlers()
 }
 func main() {
-	cert, s := makeHttpsServer()
-	log.Println("Serving http/https.")
-	go func() {
-		err := http.ListenAndServe(":http", cert.HTTPHandler(nil))
-		log.Fatal(err)
-	}()
-	err := s.ListenAndServeTLS("", "")
-	log.Fatal(err)
+    if os.Getenv("TERM_PROGRAM") == "Apple_Terminal" {
+        log.Println("Serving :8088.")
+        err := http.ListenAndServe(":8088", nil)
+        log.Fatal(err)
+    } else {
+        startHttpsServer()
+    }
 }
 
-func makeHttpsServer() (*autocert.Manager, *http.Server) {
-	certManager := &autocert.Manager{
-		Prompt: autocert.AcceptTOS,
-		HostPolicy: autocert.HostWhitelist("www.neko03.com"),
-	}
-	certManager.Cache = autocert.DirCache(makeCacheDir())
-	server := &http.Server{
-		Addr: ":https",
-		TLSConfig: &tls.Config{
-			GetCertificate: certManager.GetCertificate,
-		},
-	}
-	return certManager, server
-}
-func makeCacheDir() string {
-	dir := filepath.Join("/certCache", "cache-golang-autocert")
-	Assert(os.MkdirAll(dir, 0700))
-	return dir
+func startHttpsServer() {
+    certManager := &autocert.Manager{
+        Prompt: autocert.AcceptTOS,
+        HostPolicy: autocert.HostWhitelist("www.neko03.com"),
+        Cache: autocert.DirCache("cert-cache"),
+    }
+    server := &http.Server{
+        Addr: ":https",
+        TLSConfig: &tls.Config{
+            GetCertificate: certManager.GetCertificate,
+        },
+    }
+    log.Println("Serving http/https.")
+    go func() {
+        err := http.ListenAndServe(":http", certManager.HTTPHandler(nil))
+        log.Fatal(err)
+    }()
+    err := server.ListenAndServeTLS("", "")
+    log.Fatal(err)
 }

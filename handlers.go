@@ -4,14 +4,15 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"path/filepath"
 	"text/template"
 )
 
 const _baseHtml = `<!DOCTYPE html><html><body><script>%s</script></body></html>`
-type Data struct {
-}
 
+func registerFileServer() {
+	fs := http.FileServer(http.Dir("assets"))
+	http.Handle("/assets/", http.StripPrefix("/assets/", fs))
+}
 func registerHandlers() {
 	favicon()
 	index()
@@ -19,13 +20,13 @@ func registerHandlers() {
 
 func favicon() {
 	http.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "./assets/icon.png")
+		http.ServeFile(w, r, "assets/icon.png")
 	})
 }
 
 func index() {
 	var view = template.New("index")
-	var script = Must(ioutil.ReadFile(filepath.Join("views", "index.js")))
+	var script = Must(ioutil.ReadFile("views/index.js"))
 	Must(view.Parse(fmt.Sprintf(_baseHtml, script)))
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if PathConstrain("/", w, r) {
