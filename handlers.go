@@ -7,7 +7,7 @@ import (
 	"text/template"
 )
 
-const _baseHtml = `<!DOCTYPE html><html><body><script>%s</script></body></html>`
+const _baseHtml = `<script>%s</script>`
 
 func registerFileServer() {
 	fs := http.FileServer(http.Dir("assets"))
