@@ -27,7 +27,7 @@ func favicon() {
                 var path = Must(url.Parse(r.Header["Referer"][0])).Path
                 if path == "/" {
                     http.ServeFile(w, r, "assets/index/icon.png")
-                } else if path == "/地獄通信" {
+                } else if path == "/jigokutsuushin" {
                     http.ServeFile(w, r, "assets/jigokutsushin/icon.png")
                 } else {
                     http.NotFound(w, r)
@@ -54,8 +54,8 @@ func jigokutsuushin() {
     var view = template.New("main")
     var script = Must(ioutil.ReadFile("views/target/jigokutsuushin.js"))
     Must(view.Parse(fmt.Sprintf(baseHTML, script)))
-    http.HandleFunc("/地獄通信", func(w http.ResponseWriter, r *http.Request) {
-        if PathConstrain("/地獄通信", w, r) {
+    http.HandleFunc("/jigokutsuushin", func(w http.ResponseWriter, r *http.Request) {
+        if PathConstrain("/jigokutsuushin", w, r) {
             Assert(view.Execute(w, nil))
         }
     })
