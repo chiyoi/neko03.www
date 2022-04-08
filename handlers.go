@@ -41,7 +41,7 @@ func favicon() {
 
 func index() {
     var view = template.New("main")
-    var script = Must(ioutil.ReadFile("views/target/index.js"))
+    var script = Must(ioutil.ReadFile("view/target/index.js"))
     Must(view.Parse(fmt.Sprintf(baseHTML, script)))
     http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
         if PathConstrain("/", w, r) {
@@ -52,7 +52,7 @@ func index() {
 
 func jigokutsuushin() {
     var view = template.New("main")
-    var script = Must(ioutil.ReadFile("views/target/jigokutsuushin.js"))
+    var script = Must(ioutil.ReadFile("view/target/jigokutsuushin.js"))
     Must(view.Parse(fmt.Sprintf(baseHTML, script)))
     http.HandleFunc("/jigokutsuushin", func(w http.ResponseWriter, r *http.Request) {
         if PathConstrain("/jigokutsuushin", w, r) {
