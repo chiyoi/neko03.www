@@ -26,7 +26,7 @@ func favicon() {
 
 func index() {
 	var view = template.New("index")
-	var script = Must(ioutil.ReadFile("views/index.js"))
+	var script = Must(ioutil.ReadFile("views/target/index.js"))
 	Must(view.Parse(fmt.Sprintf(_baseHtml, script)))
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if PathConstrain("/", w, r) {
