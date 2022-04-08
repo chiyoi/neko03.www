@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"strings"
 )
 
 func Must[T any](value T, err error) T {
@@ -15,7 +16,7 @@ func Assert(err error) {
 }
 
 func PathConstrain(path string, w http.ResponseWriter, r *http.Request) bool {
-	if r.URL.Path != path {
+    if ! (strings.HasPrefix(r.Host, "www") || strings.HasPrefix(r.Host, "localhost")) || r.URL.Path != path {
 		http.NotFound(w, r)
 		return false
 	}
