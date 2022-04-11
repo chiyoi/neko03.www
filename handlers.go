@@ -8,7 +8,7 @@ import (
 	"text/template"
 )
 
-const baseHTML = `<script>%s</script>`
+const baseHTML = `<div id="noscript">Javascript is required.</div><script>%s</script>`
 
 func registerFileServer() {
 	fs := http.FileServer(http.Dir("assets"))
