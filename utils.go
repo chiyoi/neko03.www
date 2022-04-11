@@ -15,7 +15,7 @@ func Assert(err error) {
 }
 
 func PathConstrain(path string, w http.ResponseWriter, r *http.Request) bool {
-    if ! (r.URL.Path != path) {
+    if (r.URL.Path != path) {
 		http.NotFound(w, r)
 		return false
 	}
