@@ -26,7 +26,7 @@ func main() {
 func startHttpsServer() {
     certManager := &autocert.Manager{
         Prompt: autocert.AcceptTOS,
-        HostPolicy: autocert.HostWhitelist("www.neko03.com"),
+        HostPolicy: autocert.HostWhitelist("neko03.com"),
         Cache: autocert.DirCache("cert-cache"),
     }
     server := &http.Server{
