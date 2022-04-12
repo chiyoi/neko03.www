@@ -10,18 +10,17 @@ import (
 
 const baseHTML = `<div id="noscript">Javascript is required.</div><script>%s</script>`
 
-func registerFileServer() {
+func RegisterHandlers(mux *http.ServeMux) {
 	fs := http.FileServer(http.Dir("assets"))
-	http.Handle("/assets/", http.StripPrefix("/assets/", fs))
-}
-func registerHandlers() {
-    favicon()
-	index()
-    jigokutsuushin()
+	mux.Handle("/assets/", http.StripPrefix("/assets/", fs))
+
+    favicon(mux)
+	index(mux)
+    jigokutsuushin(mux)
 }
 
-func favicon() {
-    http.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
+func favicon(mux *http.ServeMux) {
+    mux.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
         if PathConstrain("/favicon.ico", w, r) {
             if len(r.Header["Referer"]) > 0 {
                 var path = Must(url.Parse(r.Header["Referer"][0])).Path
@@ -39,22 +38,22 @@ func favicon() {
     })
 }
 
-func index() {
+func index(mux *http.ServeMux) {
     var view = template.New("main")
     var script = Must(ioutil.ReadFile("view/target/index.js"))
     Must(view.Parse(fmt.Sprintf(baseHTML, script)))
-    http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+    mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
         if PathConstrain("/", w, r) {
             Assert(view.Execute(w, nil))
         }
     })
 }
 
-func jigokutsuushin() {
+func jigokutsuushin(mux *http.ServeMux) {
     var view = template.New("main")
     var script = Must(ioutil.ReadFile("view/target/jigokutsuushin.js"))
     Must(view.Parse(fmt.Sprintf(baseHTML, script)))
-    http.HandleFunc("/jigokutsuushin", func(w http.ResponseWriter, r *http.Request) {
+    mux.HandleFunc("/jigokutsuushin", func(w http.ResponseWriter, r *http.Request) {
         if PathConstrain("/jigokutsuushin", w, r) {
             Assert(view.Execute(w, nil))
         }
