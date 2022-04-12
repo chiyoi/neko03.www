@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+        "target": "es2017",
+        "outFile": "../../target/index.js",
+        "removeComments": true,
+        "strict": true
+    },
+    "include": ["*.ts", "../common/*.ts"]
+}

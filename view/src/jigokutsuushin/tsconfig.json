@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+        "target": "es2017",
+        "outFile": "../../target/jigokutsuushin.js",
+        "removeComments": true,
+        "strict": true
+    },
+    "include": ["*.ts", "../common/*.ts"]
+}
