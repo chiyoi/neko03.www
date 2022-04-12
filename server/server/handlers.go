@@ -42,7 +42,7 @@ func favicon(mux *http.ServeMux) {
 
 func index(mux *http.ServeMux) {
     var view = template.New("main")
-    var script = utils.Must(ioutil.ReadFile("view/target/index.js"))
+    var script = utils.Must(ioutil.ReadFile("view/index.js"))
     utils.Must(view.Parse(fmt.Sprintf(baseHTML, script)))
     mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
         if utils.PathConstrain("/", w, r) {
@@ -53,7 +53,7 @@ func index(mux *http.ServeMux) {
 
 func jigokutsuushin(mux *http.ServeMux) {
     var view = template.New("main")
-    var script = utils.Must(ioutil.ReadFile("view/target/jigokutsuushin.js"))
+    var script = utils.Must(ioutil.ReadFile("view/jigokutsuushin.js"))
     utils.Must(view.Parse(fmt.Sprintf(baseHTML, script)))
     mux.HandleFunc("/jigokutsuushin", func(w http.ResponseWriter, r *http.Request) {
         if utils.PathConstrain("/jigokutsuushin", w, r) {
