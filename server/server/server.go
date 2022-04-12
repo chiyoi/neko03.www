@@ -50,13 +50,12 @@ func Servers(mux *http.ServeMux) *Servers_T {
 
     var httpsServer = new(http.Server)
     httpsServer.Addr = ":https"
+    httpsServer.Handler = mux
     var tlsConfig = new(tls.Config)
     tlsConfig.GetCertificate = certManager.GetCertificate
+    httpsServer.TLSConfig = tlsConfig
 
     var httpServer = new(http.Server)
-    httpsServer.TLSConfig = tlsConfig
-    httpServer.Addr = ":http"
-    httpServer.Handler = certManager.HTTPHandler(mux)
 
     var ser = new(Servers_T)
     ser.mux = mux
