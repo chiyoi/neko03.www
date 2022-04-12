@@ -1,7 +1,9 @@
 package main
 
+import "neko03.com/www/server"
+
 func main() {
-    var mux = Mux()
-    var ser = Servers(mux)
+    var mux = server.Mux()
+    var ser = server.Servers(mux)
     ser.Start()
 }

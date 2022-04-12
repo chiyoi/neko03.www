@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"fmt"
@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"net/url"
 	"text/template"
+    
+    "neko03.com/www/utils"
 )
 
 const baseHTML = `<div id="noscript">Javascript is required.</div><script>%s</script>`
@@ -21,9 +23,9 @@ func RegisterHandlers(mux *http.ServeMux) {
 
 func favicon(mux *http.ServeMux) {
     mux.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
-        if PathConstrain("/favicon.ico", w, r) {
+        if utils.PathConstrain("/favicon.ico", w, r) {
             if len(r.Header["Referer"]) > 0 {
-                var path = Must(url.Parse(r.Header["Referer"][0])).Path
+                var path = utils.Must(url.Parse(r.Header["Referer"][0])).Path
                 if path == "/" {
                     http.ServeFile(w, r, "assets/index/icon.png")
                 } else if path == "/jigokutsuushin" {
@@ -40,22 +42,22 @@ func favicon(mux *http.ServeMux) {
 
 func index(mux *http.ServeMux) {
     var view = template.New("main")
-    var script = Must(ioutil.ReadFile("view/target/index.js"))
-    Must(view.Parse(fmt.Sprintf(baseHTML, script)))
+    var script = utils.Must(ioutil.ReadFile("view/target/index.js"))
+    utils.Must(view.Parse(fmt.Sprintf(baseHTML, script)))
     mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-        if PathConstrain("/", w, r) {
-            Assert(view.Execute(w, nil))
+        if utils.PathConstrain("/", w, r) {
+            utils.Assert(view.Execute(w, nil))
         }
     })
 }
 
 func jigokutsuushin(mux *http.ServeMux) {
     var view = template.New("main")
-    var script = Must(ioutil.ReadFile("view/target/jigokutsuushin.js"))
-    Must(view.Parse(fmt.Sprintf(baseHTML, script)))
+    var script = utils.Must(ioutil.ReadFile("view/target/jigokutsuushin.js"))
+    utils.Must(view.Parse(fmt.Sprintf(baseHTML, script)))
     mux.HandleFunc("/jigokutsuushin", func(w http.ResponseWriter, r *http.Request) {
-        if PathConstrain("/jigokutsuushin", w, r) {
-            Assert(view.Execute(w, nil))
+        if utils.PathConstrain("/jigokutsuushin", w, r) {
+            utils.Assert(view.Execute(w, nil))
         }
     })
 }
