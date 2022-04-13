@@ -11,25 +11,26 @@ import (
 
 
 type Servers_T struct {
-    mux *Mux_T
+    mux *http.ServeMux
     certManager *autocert.Manager
     httpsServer *http.Server
     httpServer *http.Server
 }
-func Servers(mux *Mux_T) *Servers_T {
+func Servers(mux *http.ServeMux) *Servers_T {
     var certManager = new(autocert.Manager)
     certManager.Prompt = autocert.AcceptTOS
-    certManager.HostPolicy = autocert.HostWhitelist("www.neko03.com")
     certManager.Cache = autocert.DirCache("cert-cache")
+    var tlsConfig = new(tls.Config)
+    tlsConfig.GetCertificate = certManager.GetCertificate
 
     var httpsServer = new(http.Server)
     httpsServer.Addr = ":https"
-    httpsServer.Handler = mux.mu
-    var tlsConfig = new(tls.Config)
-    tlsConfig.GetCertificate = certManager.GetCertificate
+    httpsServer.Handler = mux
     httpsServer.TLSConfig = tlsConfig
 
     var httpServer = new(http.Server)
+    httpServer.Addr = ":http"
+    httpServer.Handler = certManager.HTTPHandler(mux)
 
     var ser = new(Servers_T)
     ser.mux = mux
@@ -38,24 +39,28 @@ func Servers(mux *Mux_T) *Servers_T {
     ser.httpServer = httpServer
     return ser
 }
-
-func (ser *Servers_T) serveHTTP() {
+func (ser *Servers_T) RegisterHostWhiteList(hosts...string) {
+    ser.certManager.HostPolicy = autocert.HostWhitelist(hosts...)
+}
+func (ser *Servers_T) ServeHTTP(addr...string) {
+    if len(addr) == 1 {
+        ser.httpServer.Addr = addr[0]
+    } else if len(addr) != 0 {
+        log.Fatal("error addr")
+    }
     log.Fatal(ser.httpServer.ListenAndServe())
 }
-func (ser *Servers_T) serveHTTPS() {
+func (ser *Servers_T) ServeHTTPS() {
     log.Fatal(ser.httpsServer.ListenAndServeTLS("", ""))
 }
-func (ser *Servers_T) Start() {
+
+func Start(ser *Servers_T) {
     if os.Getenv("TERM_PROGRAM") == "Apple_Terminal" {
-        ser.httpServer.Addr = ":8088"
-        ser.httpServer.Handler = ser.mux.mu
         log.Println("Serving :8088")
-        ser.serveHTTP()
+        ser.ServeHTTP(":8088")
     } else {
-        ser.httpServer.Addr = ":http"
-        ser.httpServer.Handler = ser.certManager.HTTPHandler(ser.mux.mu)
         log.Println("Serving http/https.")
-        go ser.serveHTTP()
-        ser.serveHTTPS()
+        go ser.ServeHTTP()
+        ser.ServeHTTPS()
     }
 }

@@ -7,6 +7,8 @@ require (
 	neko03.com/www/server v0.0.0-00010101000000-000000000000
 )
 
+require neko03.com/www/handlers v0.0.0-00010101000000-000000000000
+
 require (
 	golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2 // indirect
 	golang.org/x/text v0.3.6 // indirect
@@ -16,3 +18,5 @@ require (
 replace neko03.com/www/utils => ./utils
 
 replace neko03.com/www/server => ./server
+
+replace neko03.com/www/handlers => ./handlers
