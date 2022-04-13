@@ -20,6 +20,8 @@ RUN CGO_ENABLED=0 go build -o ./target/www
 FROM node:12.22.12
 RUN npm -g install typescript@4.6.3 jsmin@1.0.1
 
+WORKDIR /build/src
+COPY ./view/src/common ./common
 WORKDIR /build/src/index
 COPY ./view/src/index/* ./
 RUN tsc --outFile ../../target/index.js
