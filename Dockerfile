@@ -46,7 +46,7 @@ RUN for f in *.js; do jsmin --overwrite $f; done
 FROM alpine
 WORKDIR /neko
 COPY --from=0 /build/target/www ./
-COPY ./assets ./assets
+COPY ./assets/assets ./assets
 COPY --from=1 /build/target/* ./view/
 
 CMD ["./www"]
