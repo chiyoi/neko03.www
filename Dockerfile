@@ -16,7 +16,7 @@ WORKDIR /build
 COPY ./server/go.* ./
 RUN go mod download
 
-COPY ./server/handlers/*.go ./server/
+COPY ./server/handlers/*.go ./handlers/
 COPY ./server/server/*.go ./server/
 COPY ./server/utils/*.go ./utils/
 COPY ./server/*.go ./
