@@ -1,4 +1,4 @@
-window.oncontextmenu = function() {return false}
+window.oncontextmenu = function(e) {e.preventDefault()}
 window.onload = function() {
     htmlinit()
     main()

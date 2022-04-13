@@ -2,23 +2,34 @@ package server
 
 import (
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"text/template"
-    
-    "neko03.com/www/utils"
+	"path/filepath"
+
+	"neko03.com/www/utils"
 )
 
-const baseHTML = `<div id="noscript">Javascript is required.</div><script>%s</script>`
+type Mux_T struct {
+    mu *http.ServeMux
+}
 
-func RegisterHandlers(mux *http.ServeMux) {
+func Mux() *Mux_T {
+    var serveMux = new(http.ServeMux)
+    var mux = new(Mux_T)
+    mux.mu = serveMux
+    return mux
+}
+
+const baseHTML = `<div id="noscript">Javascript is required.</div><script>%s</script>\n`
+
+func (mux *Mux_T) RegisterHandlers() {
 	fs := http.FileServer(http.Dir("assets"))
-	mux.Handle("/assets/", http.StripPrefix("/assets/", fs))
+	mux.mu.Handle("/assets/", http.StripPrefix("/assets/", fs))
 
-    favicon(mux)
-	index(mux)
-    jigokutsuushin(mux)
+    favicon(mux.mu)
+    pages(mux.mu)
 }
 
 func favicon(mux *http.ServeMux) {
@@ -40,24 +51,26 @@ func favicon(mux *http.ServeMux) {
     })
 }
 
-func index(mux *http.ServeMux) {
-    var view = template.New("main")
-    var script = utils.Must(ioutil.ReadFile("view/index.js"))
-    utils.Must(view.Parse(fmt.Sprintf(baseHTML, script)))
+func pages(mux *http.ServeMux) {
+    var pages = []string{
+        "index",
+        "jigokutsuushin",
+    }
+    var views = make(map[string]*template.Template)
+    for _, page := range pages {
+        var script = utils.Must(ioutil.ReadFile(filepath.Join("view", page+".js")))
+        var view = utils.Must(template.New(page).Parse(fmt.Sprintf(baseHTML, script)))
+        views[page] = view
+    }
+
     mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
         if utils.PathConstrain("/", w, r) {
-            utils.Assert(view.Execute(w, nil))
+            utils.Assert(views["index"].Execute(w, nil))
         }
     })
-}
-
-func jigokutsuushin(mux *http.ServeMux) {
-    var view = template.New("main")
-    var script = utils.Must(ioutil.ReadFile("view/jigokutsuushin.js"))
-    utils.Must(view.Parse(fmt.Sprintf(baseHTML, script)))
     mux.HandleFunc("/jigokutsuushin", func(w http.ResponseWriter, r *http.Request) {
         if utils.PathConstrain("/jigokutsuushin", w, r) {
-            utils.Assert(view.Execute(w, nil))
+            utils.Assert(views["jigokutsuushin"].Execute(w, nil))
         }
     })
 }

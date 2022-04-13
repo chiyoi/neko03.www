@@ -1,10 +1,6 @@
-window.oncontextmenu = function() {return false}
+window.oncontextmenu = function(e) {e.preventDefault()}
 window.onload = function() {
     htmlinit()
-    main()
-}
-
-function main() {
     new append("head")
         .tag("title", "chiyoi")
         .favicon("/assets/index/icon.png")
