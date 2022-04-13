@@ -1,0 +1,8 @@
+{
+    "compilerOptions": {
+        "target": "es2017",
+        "removeComments": true,
+        "strict": true
+    },
+    "include": ["*.ts", "../common/*.ts"]
+}
