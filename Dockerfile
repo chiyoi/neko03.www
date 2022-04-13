@@ -20,10 +20,14 @@ RUN CGO_ENABLED=0 go build -o ./target/www
 FROM node:12.22.12
 RUN npm -g install typescript@4.6.3 jsmin@1.0.1
 
-WORKDIR /build
-COPY ./view/src ./src
-COPY ./view/build-view.sh ./
-RUN ./build-view.sh
+WORKDIR /build/src/index
+COPY ./view/src/index/* ./
+RUN tsc --outFile ../../target/index.js
+WORKDIR /build/src/jigokutsuushin
+COPY ./view/src/jigokutsuushin/* ./
+RUN tsc --outFile ../../target/jigokutsuushin.js
+WORKDIR /build/target
+RUN for f in *.js; do jsmin --overwrite $f; done
 
 FROM alpine
 WORKDIR /neko
