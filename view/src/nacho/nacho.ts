@@ -22,6 +22,8 @@ var leftid: number
 var frameRate: number
 
 function init() {
+    new append("head")
+        .tag("title", "nachoneko")
     ymin = Math.floor(0.05 * neko.clientHeight)
     ymax = Math.floor(0.4 * neko.clientHeight)
     hmin = Math.floor(0.3 * neko.clientHeight)
