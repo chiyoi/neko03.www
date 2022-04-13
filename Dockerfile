@@ -27,12 +27,19 @@ RUN npm -g install typescript@4.6.3 jsmin@1.0.1
 
 WORKDIR /build/src
 COPY ./view/src/common ./common
+
 WORKDIR /build/src/index
 COPY ./view/src/index/* ./
 RUN tsc --outFile ../../target/index.js
+
 WORKDIR /build/src/jigokutsuushin
 COPY ./view/src/jigokutsuushin/* ./
 RUN tsc --outFile ../../target/jigokutsuushin.js
+
+WORKDIR /build/src/nacho
+COPY ./view/src/nacho/* ./
+RUN tsc --outFile ../../target/nacho.js
+
 WORKDIR /build/target
 RUN for f in *.js; do jsmin --overwrite $f; done
 

@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"fmt"
-	"html/template"
+	"text/template"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -42,11 +42,11 @@ func (mux *Mux_T) GetHandler() *http.ServeMux {
     return mux.mu
 }
 
-func JSPage(name string) http.HandlerFunc {
+func JSPage(name string, data any) http.HandlerFunc {
     var script = utils.Must(ioutil.ReadFile(filepath.Join("view", name+".js")))
     var view = utils.Must(template.New(name).Parse(fmt.Sprintf(baseHTML, script)))
     return func(w http.ResponseWriter, r *http.Request) {
-        utils.Assert(view.Execute(w, nil))
+        utils.Assert(view.Execute(w, data))
     }
 }
 

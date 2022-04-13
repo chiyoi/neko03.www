@@ -13,8 +13,9 @@ func main() {
         "/": "index",
         "/jigokutsuushin": "jigokutsuushin",
     } {
-        mux.RegisterHandleFunc(k, handlers.JSPage(v))
+        mux.RegisterHandleFunc(k, handlers.JSPage(v, nil))
     }
+    mux.RegisterHandleFunc("/nacho", handlers.Nacho())
     var ser = server.Servers(mux.GetHandler())
     ser.RegisterHostWhiteList("www.neko03.com")
     server.Start(ser)
