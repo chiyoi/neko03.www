@@ -8,6 +8,7 @@ import (
 func main() {
     var mux = handlers.Mux()
     mux.RegisterFileServer("/assets/", "./assets")
+    mux.RegisterFileServer("/prototype2/", "./prototype2")
     mux.RegisterFavicon(handlers.Favicon())
     for k, v := range map[string]string{
         "/": "index",

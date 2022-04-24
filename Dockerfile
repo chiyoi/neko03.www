@@ -47,6 +47,7 @@ FROM alpine
 WORKDIR /neko
 COPY --from=0 /build/target/www ./
 COPY ./assets/assets ./assets
+COPY ./assets/prototype2 ./prototype2
 COPY --from=1 /build/target/* ./view/
 
 CMD ["./www"]
