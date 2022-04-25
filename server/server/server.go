@@ -10,13 +10,13 @@ import (
 )
 
 
-type Servers_T struct {
+type Servers struct {
     mux *http.ServeMux
     certManager *autocert.Manager
     httpsServer *http.Server
     httpServer *http.Server
 }
-func Servers(mux *http.ServeMux) *Servers_T {
+func NewServers(mux *http.ServeMux) *Servers {
     var certManager = new(autocert.Manager)
     certManager.Prompt = autocert.AcceptTOS
     certManager.Cache = autocert.DirCache("cert-cache")
@@ -32,17 +32,17 @@ func Servers(mux *http.ServeMux) *Servers_T {
     httpServer.Addr = ":http"
     httpServer.Handler = certManager.HTTPHandler(mux)
 
-    var ser = new(Servers_T)
+    var ser = new(Servers)
     ser.mux = mux
     ser.certManager = certManager
     ser.httpsServer = httpsServer
     ser.httpServer = httpServer
     return ser
 }
-func (ser *Servers_T) RegisterHostWhiteList(hosts...string) {
+func (ser *Servers) RegisterHostWhiteList(hosts...string) {
     ser.certManager.HostPolicy = autocert.HostWhitelist(hosts...)
 }
-func (ser *Servers_T) ServeHTTP(addr...string) {
+func (ser *Servers) ServeHTTP(addr...string) {
     if len(addr) == 1 {
         ser.httpServer.Addr = addr[0]
     } else if len(addr) != 0 {
@@ -50,11 +50,11 @@ func (ser *Servers_T) ServeHTTP(addr...string) {
     }
     log.Fatal(ser.httpServer.ListenAndServe())
 }
-func (ser *Servers_T) ServeHTTPS() {
+func (ser *Servers) ServeHTTPS() {
     log.Fatal(ser.httpsServer.ListenAndServeTLS("", ""))
 }
 
-func Start(ser *Servers_T) {
+func Start(ser *Servers) {
     if os.Getenv("TERM_PROGRAM") == "Apple_Terminal" {
         log.Println("Serving :8088")
         ser.ServeHTTP(":8088")

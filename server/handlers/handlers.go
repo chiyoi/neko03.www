@@ -2,43 +2,44 @@ package handlers
 
 import (
 	"fmt"
-	"text/template"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"path/filepath"
+	"text/template"
 
 	"neko03.com/www/utils"
 )
 
 const baseHTML = "<div id=\"noscript\">Javascript is required.</div><script>%s</script>\n"
 
-type Mux_T struct {
+type Mux struct {
     mu *http.ServeMux
+    Hosts []string
 }
 
-func Mux() *Mux_T {
+func NewMux() *Mux {
     var serveMux = new(http.ServeMux)
 
-    var mux = new(Mux_T)
+    var mux = new(Mux)
     mux.mu = serveMux
     return mux
 }
 
-func (mux *Mux_T) RegisterHandleFunc(pattern string, handlerFunc http.HandlerFunc) {
+func (mux *Mux) RegisterHandleFunc(pattern string, handlerFunc http.HandlerFunc) {
     mux.mu.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
-        if utils.PathConstrain(pattern, w, r) {
+        if utils.HostAssert(mux.Hosts, w, r) && utils.PathAssert(pattern, w, r) {
             handlerFunc(w, r)
         }
     })
 }
-func (mux *Mux_T) RegisterFileServer(pattern string, dir string) {
+func (mux *Mux) RegisterFileServer(pattern string, dir string) {
     mux.mu.Handle(pattern, http.StripPrefix(pattern, http.FileServer(http.Dir(dir))))
 }
-func (mux *Mux_T) RegisterFavicon(handlerFunc http.HandlerFunc) {
+func (mux *Mux) RegisterFavicon(handlerFunc http.HandlerFunc) {
     mux.RegisterHandleFunc("/favicon.ico", handlerFunc)
 }
-func (mux *Mux_T) GetHandler() *http.ServeMux {
+func (mux *Mux) GetHandler() *http.ServeMux {
     return mux.mu
 }
 

@@ -14,8 +14,17 @@ func Assert(err error) {
 	if err != nil {log.Fatal(err)}
 }
 
-func PathConstrain(path string, w http.ResponseWriter, r *http.Request) bool {
-    if (r.URL.Path != path) {
+func HostAssert(hosts []string, w http.ResponseWriter, r *http.Request) bool {
+    for _, host := range hosts {
+        if r.Host == host {
+            return true
+        }
+    }
+    http.NotFound(w, r)
+    return false
+}
+func PathAssert(path string, w http.ResponseWriter, r *http.Request) bool {
+    if r.URL.Path != path {
 		http.NotFound(w, r)
 		return false
 	}

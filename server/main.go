@@ -6,7 +6,10 @@ import (
 )
 
 func main() {
-    var mux = handlers.Mux()
+    hosts := []string{"www.neko03.com"}
+
+    var mux = handlers.NewMux()
+    mux.Hosts = append(hosts, "localhost:8088")
     mux.RegisterFileServer("/assets/", "./assets")
     mux.RegisterFileServer("/prototype2/", "./prototype2")
     mux.RegisterFavicon(handlers.Favicon())
@@ -17,7 +20,9 @@ func main() {
         mux.RegisterHandleFunc(k, handlers.JSPage(v, nil))
     }
     mux.RegisterHandleFunc("/nacho", handlers.Nacho())
-    var ser = server.Servers(mux.GetHandler())
-    ser.RegisterHostWhiteList("www.neko03.com")
+
+    var ser = server.NewServers(mux.GetHandler())
+    ser.RegisterHostWhiteList(hosts...)
+
     server.Start(ser)
 }
