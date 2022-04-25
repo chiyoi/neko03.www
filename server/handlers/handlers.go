@@ -33,8 +33,12 @@ func (mux *Mux) RegisterHandleFunc(pattern string, handlerFunc http.HandlerFunc)
         }
     })
 }
-func (mux *Mux) RegisterFileServer(pattern string, dir string) {
-    mux.mu.Handle(pattern, http.StripPrefix(pattern, http.FileServer(http.Dir(dir))))
+func (mux *Mux) RegisterFileServer(pattern string, dir string, setHeaders func(w http.ResponseWriter, r *http.Request)) {
+    fs := http.StripPrefix(pattern, http.FileServer(http.Dir(dir)))
+    mux.mu.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
+        setHeaders(w, r)
+        fs.ServeHTTP(w, r)
+    })
 }
 func (mux *Mux) RegisterFavicon(handlerFunc http.HandlerFunc) {
     mux.RegisterHandleFunc("/favicon.ico", handlerFunc)
