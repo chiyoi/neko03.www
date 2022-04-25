@@ -32,11 +32,10 @@ function playopening() {
             ["type", "audio/mpeg"]
         ]))
     video.onloadeddata = () => {
-        audio.play()
         video.play()
+        audio.play()
     }
     video.onended = session1
-    timeout = window.setTimeout(session1, 5000)
     audio.onended = () => {remove(audio)}
 }
 
