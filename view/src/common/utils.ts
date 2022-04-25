@@ -159,7 +159,7 @@ class append<E extends HTMLElement> {
     favicon(path: string): append<E> {
         let favicon = document.createElement("link")
         new modify(favicon)
-            .setAttr("rel", "icon")
+            .setAttr("rel", "shortcut icon")
             .setAttr("type", "image/png")
             .setAttr("href", path)
         this.node.appendChild(favicon)

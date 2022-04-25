@@ -3,9 +3,11 @@ package handlers
 import (
 	"fmt"
 	"io/ioutil"
+	_ "log"
 	"net/http"
 	"net/url"
 	"path/filepath"
+	"strings"
 	"text/template"
 
 	"neko03.com/www/utils"
@@ -26,9 +28,12 @@ func NewMux() *Mux {
     return mux
 }
 
-func (mux *Mux) RegisterHandleFunc(pattern string, handlerFunc http.HandlerFunc) {
+func (mux *Mux) RegisterHandleFunc(pattern string, handlerFunc http.HandlerFunc, setHeaders func(w http.ResponseWriter, r *http.Request)) {
     mux.mu.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
         if utils.HostAssert(mux.Hosts, w, r) && utils.PathAssert(pattern, w, r) {
+            if setHeaders != nil {
+                setHeaders(w, r)
+            }
             handlerFunc(w, r)
         }
     })
@@ -43,7 +48,7 @@ func (mux *Mux) RegisterFileServer(pattern string, dir string, setHeaders func(w
     })
 }
 func (mux *Mux) RegisterFavicon(handlerFunc http.HandlerFunc) {
-    mux.RegisterHandleFunc("/favicon.ico", handlerFunc)
+    mux.RegisterHandleFunc("/favicon.ico", handlerFunc, nil)
 }
 func (mux *Mux) GetHandler() *http.ServeMux {
     return mux.mu
@@ -72,5 +77,11 @@ func Favicon() http.HandlerFunc {
         default:
             http.NotFound(w, r)
         }
+    }
+}
+
+func SetHeaderGZ(w http.ResponseWriter, r *http.Request) {
+    if strings.HasSuffix(r.URL.Path, "gz") {
+        w.Header().Set("Content-Encoding", "gzip")
     }
 }

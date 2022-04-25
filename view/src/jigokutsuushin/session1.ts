@@ -1,5 +1,4 @@
 function session1() {
-    window.clearTimeout(timeout)
     remove(getElement("video", "video"))
     let formframe = createOn(neko, "formframe")
     new modify(formframe)

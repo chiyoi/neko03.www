@@ -13,23 +13,17 @@ func main() {
 
     var mux = handlers.NewMux()
     mux.Hosts = append(hosts, "localhost:8088")
-    mux.RegisterFileServer("/assets/", "./assets", nil)
+    mux.RegisterFavicon(handlers.Favicon())
+    mux.RegisterFileServer("/assets/", "./assets", handlers.SetHeaderGZ)
     mux.RegisterFileServer("/prototype2/", "./prototype2", func(w http.ResponseWriter, r *http.Request) {
-        if strings.HasSuffix(r.URL.Path, "gz") {
-            w.Header().Set("Content-Encoding", "gzip")
-        }
+        handlers.SetHeaderGZ(w, r)
         if strings.HasSuffix(r.URL.Path, "wasm.gz") {
             w.Header().Set("Content-Type", "application/wasm")
         }
     })
-    mux.RegisterFavicon(handlers.Favicon())
-    for k, v := range map[string]string{
-        "/": "index",
-        "/jigokutsuushin": "jigokutsuushin",
-    } {
-        mux.RegisterHandleFunc(k, handlers.JSPage(v, nil))
-    }
-    mux.RegisterHandleFunc("/nacho", handlers.Nacho())
+    mux.RegisterHandleFunc("/", handlers.JSPage("index", nil), nil)
+    mux.RegisterHandleFunc("/jigokutsuushin", handlers.JSPage("jigokutsuushin", nil), nil)
+    mux.RegisterHandleFunc("/nacho", handlers.Nacho(), nil)
 
     var ser = server.NewServers(mux.GetHandler())
     ser.RegisterHostWhiteList(hosts...)

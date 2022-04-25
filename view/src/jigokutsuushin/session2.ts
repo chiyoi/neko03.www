@@ -1,3 +1,16 @@
+function session2() {
+    let formframe = getElement("formframe")
+    let formopacity = 1
+    let formfadeout = window.setInterval(() => {
+        formopacity -= 0.01
+        new modify(formframe).setStyle("opacity", `${formopacity}`)
+        if (Number(formframe.style.opacity) <= 0) {
+            window.clearInterval(formfadeout)
+            remove(formframe)
+            session2_1()
+        }
+    }, 1)
+}
 function session2_1() {
     let origin = neko.style.cursor
     new modify(neko).setStyle("cursor", "wait")
@@ -6,6 +19,7 @@ function session2_1() {
         popup()
     }, 2000)
 }
+var timeout: number
 function popup() {
     let popupframe = createOn(neko, "popupframe")
     new modify(popupframe)
