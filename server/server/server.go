@@ -1,66 +1,88 @@
 package server
 
 import (
+	"context"
 	"crypto/tls"
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
+	"time"
 
 	"golang.org/x/crypto/acme/autocert"
+	"neko03.com/www/utils"
 )
 
 
 type Servers struct {
-    mux *http.ServeMux
-    certManager *autocert.Manager
-    httpsServer *http.Server
-    httpServer *http.Server
+    Mux *http.ServeMux
+    CertManager *autocert.Manager
+    HttpsServer *http.Server
+    HttpServer *http.Server
 }
 func NewServers(mux *http.ServeMux) *Servers {
-    var certManager = new(autocert.Manager)
-    certManager.Prompt = autocert.AcceptTOS
-    certManager.Cache = autocert.DirCache("cert-cache")
-    var tlsConfig = new(tls.Config)
-    tlsConfig.GetCertificate = certManager.GetCertificate
+    var certManager = &autocert.Manager{
+        Prompt: autocert.AcceptTOS,
+        Cache: autocert.DirCache("cert-cache"),
+    }
 
-    var httpsServer = new(http.Server)
-    httpsServer.Addr = ":https"
-    httpsServer.Handler = mux
-    httpsServer.TLSConfig = tlsConfig
+    var httpsServer = &http.Server{
+        Addr: ":https",
+        Handler: mux,
+        TLSConfig: &tls.Config{
+            GetCertificate: certManager.GetCertificate,
+        },
+    }
 
-    var httpServer = new(http.Server)
-    httpServer.Addr = ":http"
-    httpServer.Handler = certManager.HTTPHandler(mux)
+    var httpServer = &http.Server{
+        Addr: ":http",
+        Handler: certManager.HTTPHandler(mux),
+    }
 
-    var ser = new(Servers)
-    ser.mux = mux
-    ser.certManager = certManager
-    ser.httpsServer = httpsServer
-    ser.httpServer = httpServer
-    return ser
+    var sers = &Servers{
+        Mux: mux,
+        CertManager: certManager,
+        HttpServer: httpServer,
+        HttpsServer: httpsServer,
+    }
+    return sers
 }
 func (ser *Servers) RegisterHostWhiteList(hosts...string) {
-    ser.certManager.HostPolicy = autocert.HostWhitelist(hosts...)
+    ser.CertManager.HostPolicy = autocert.HostWhitelist(hosts...)
 }
-func (ser *Servers) ServeHTTP(addr...string) {
-    if len(addr) == 1 {
-        ser.httpServer.Addr = addr[0]
-    } else if len(addr) != 0 {
-        log.Fatal("error addr")
+func (ser *Servers) ServeHTTP() {
+    err := ser.HttpServer.ListenAndServe()
+    if err != http.ErrServerClosed {
+        log.Fatal(err)
     }
-    log.Fatal(ser.httpServer.ListenAndServe())
 }
 func (ser *Servers) ServeHTTPS() {
-    log.Fatal(ser.httpsServer.ListenAndServeTLS("", ""))
+    err := ser.HttpsServer.ListenAndServeTLS("", "")
+    if err != http.ErrServerClosed {
+        log.Fatal(err)
+    }
+}
+func (ser *Servers) Shutdown(ctx context.Context) {
+    utils.Assert(ser.HttpServer.Shutdown(ctx))
+    utils.Assert(ser.HttpsServer.Shutdown(ctx))
 }
 
 func Start(ser *Servers) {
+    var ctx = context.Background()
     if os.Getenv("TERM_PROGRAM") == "Apple_Terminal" {
         log.Println("Serving :8088")
-        ser.ServeHTTP(":8088")
+        ser.HttpServer.Addr = ":8088"
+        go ser.ServeHTTP()
     } else {
         log.Println("Serving http/https.")
         go ser.ServeHTTP()
-        ser.ServeHTTPS()
+        go ser.ServeHTTPS()
     }
+    sig := make(chan os.Signal, 1)
+    signal.Notify(sig, os.Interrupt)
+    log.SetPrefix("\r")
+    log.Println(<-sig)
+    timerCtx, cancel := context.WithTimeout(ctx, 5 * time.Second)
+    defer cancel()
+    ser.Shutdown(timerCtx)
 }
