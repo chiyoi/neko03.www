@@ -1,17 +1,5 @@
 FROM golang:1.18
 
-WORKDIR /build/utils
-COPY ./server/utils/go.* ./
-RUN go mod download
-
-WORKDIR /build/handlers
-COPY ./server/handlers/go.* ./
-RUN go mod download
-
-WORKDIR /build/server
-COPY ./server/server/go.* ./
-RUN go mod download
-
 WORKDIR /build
 COPY ./server/go.* ./
 RUN go mod download
