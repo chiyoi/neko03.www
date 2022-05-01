@@ -28,6 +28,10 @@ WORKDIR /build/src/nacho
 COPY ./view/src/nacho/* ./
 RUN tsc --outFile ../../target/nacho.js
 
+WORKDIR /build/src/shigure
+COPY ./view/src/shigure/* ./
+RUN tsc --outFile ../../target/shigure.js
+
 WORKDIR /build/target
 RUN for f in *.js; do jsmin --overwrite $f; done
 

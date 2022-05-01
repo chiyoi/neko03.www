@@ -17,6 +17,18 @@ function createOn<K extends keyof ContentElementTagNameMap>(parentNode: HTMLElem
     return node
 }
 
+function addStyles(css: string) {
+    let styleNode = getElement("style", "style")
+    if (styleNode === undefined) {
+        let head = document.getElementsByTagName("head")[0]
+        styleNode = createOn(head, "style", "style")
+        new modify(styleNode)
+            .setAttr("type", "text/css")
+    }
+    new modify(styleNode)
+        .addContent(css)
+}
+
 function getElement<K extends keyof HTMLElementTagNameMap>(id: string, tagName: K): HTMLElementTagNameMap[K]
 function getElement(id: string): HTMLDivElement
 function getElement<K extends keyof HTMLElementTagNameMap>(id: string, tagName?: K): HTMLElementTagNameMap[K] | HTMLDivElement {
@@ -59,6 +71,10 @@ class modify<E extends HTMLElement> {
     }
     setContent(content: string): modify<E> {
         this.node.textContent = content
+        return this
+    }
+    addContent(content: string): modify<E> {
+        this.node.textContent += content
         return this
     }
     setStyle(style: StyleList, value: string): modify<E> {

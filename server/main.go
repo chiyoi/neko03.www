@@ -23,6 +23,7 @@ func main() {
     })
     mux.RegisterHandleFunc("/", handlers.JSPage("index", nil), nil)
     mux.RegisterHandleFunc("/jigokutsuushin", handlers.JSPage("jigokutsuushin", nil), nil)
+    mux.RegisterHandleFunc("/shigure", handlers.JSPage("shigure", nil), nil)
     mux.RegisterHandleFunc("/nacho", handlers.Nacho(), nil)
 
     var ser = server.NewServers(mux.GetHandler())

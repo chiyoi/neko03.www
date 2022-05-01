@@ -72,6 +72,11 @@ func Start(ser *Servers) {
     if os.Getenv("TERM_PROGRAM") == "Apple_Terminal" {
         log.Println("Serving :8088")
         ser.HttpServer.Addr = ":8088"
+        redi := http.NewServeMux()
+        redi.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+            http.Redirect(w, r, "http://:8088/", http.StatusPermanentRedirect)
+        })
+        go http.ListenAndServe(":http", redi)
         go ser.ServeHTTP()
     } else {
         log.Println("Serving http/https.")
