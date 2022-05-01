@@ -6,7 +6,9 @@ window.onload = function() {
     frameRate = 60
     moveSpeed = 50
     let font = new FontFace("lolikoneko", ttfurl)
-    font.load().then(main)
+    font.load().then(main).catch(function(error) {
+        nofont()
+    })
 }
 
 var frameRate: number
@@ -23,6 +25,20 @@ function main(loadedFont: FontFace) {
         .scale("1600px", "100px")
         .setStyles({
             "fontFamily": "lolikoneko",
+            "fontSize": "100px",
+            "textAlign": "center",
+        })
+        .translate("0", "-50%")
+        .position((neko.clientWidth + 100).toString()+"px", "50%")
+    window.setInterval(update, 1000/frameRate)
+}
+
+function nofont() {
+    let text = createOn(neko, "text")
+    new modify(text)
+        .setContent(content)
+        .scale("1600px", "100px")
+        .setStyles({
             "fontSize": "100px",
             "textAlign": "center",
         })
