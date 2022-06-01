@@ -2,10 +2,12 @@ package main
 
 import (
 	"net/http"
+	"os"
 	"strings"
 
 	"neko03.com/www/handlers"
 	"neko03.com/www/server"
+	"neko03.com/www/utils"
 )
 
 func main() {
@@ -29,7 +31,9 @@ func main() {
         http.Redirect(w, r, "https://twitter.com/chiyoi2140", http.StatusPermanentRedirect)
     }, nil)
 
-    mux.RegisterHandleFunc("/chiyoi", handlers.JSPage("chiyoi", nil), nil)
+    mux.RegisterHandleFunc("/chiyoi", handlers.JSPage("chiyoi", struct { Twi_button_img string } {
+        string(utils.Must(os.ReadFile("./assets/chiyoi/twi_button_img.svg"))),
+    }), nil)
     mux.RegisterHandleFunc("/jigokutsuushin", handlers.JSPage("jigokutsuushin", nil), nil)
     mux.RegisterHandleFunc("/shigure", handlers.JSPage("shigure", nil), nil)
     mux.RegisterHandleFunc("/nacho", handlers.Nacho(), nil)

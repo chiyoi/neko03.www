@@ -28,4 +28,10 @@ window.onload = function() {
         })
         .translate("1.5%", "30%")
         .disablePointer()
+    let twi_button = createOn(neko, "twi_button")
+    new modify(twi_button)
+        .scale("30px", "30px")
+        .centralize()
+        .translate("-500%", "500%")
+    twi_button.innerHTML = `{{.Twi_button_img}}`
 } 
