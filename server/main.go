@@ -21,7 +21,10 @@ func main() {
             w.Header().Set("Content-Type", "application/wasm")
         }
     })
-    mux.RegisterHandleFunc("/", handlers.JSPage("index", nil), nil)
+    mux.RegisterHandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+        http.Redirect(w, r, "/chiyoi", http.StatusPermanentRedirect)
+    }, nil)
+    mux.RegisterHandleFunc("/chiyoi", handlers.JSPage("chiyoi", nil), nil)
     mux.RegisterHandleFunc("/jigokutsuushin", handlers.JSPage("jigokutsuushin", nil), nil)
     mux.RegisterHandleFunc("/shigure", handlers.JSPage("shigure", nil), nil)
     mux.RegisterHandleFunc("/nacho", handlers.Nacho(), nil)

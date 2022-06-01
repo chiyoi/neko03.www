@@ -16,9 +16,9 @@ RUN npm -g install typescript@4.6.3 jsmin@1.0.1
 WORKDIR /build/src
 COPY ./view/src/common ./common
 
-WORKDIR /build/src/index
-COPY ./view/src/index/* ./
-RUN tsc --outFile ../../target/index.js
+WORKDIR /build/src/chiyoi
+COPY ./view/src/chiyoi/* ./
+RUN tsc --outFile ../../target/chiyoi.js
 
 WORKDIR /build/src/jigokutsuushin
 COPY ./view/src/jigokutsuushin/* ./
