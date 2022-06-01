@@ -32,6 +32,12 @@ window.onload = function() {
     new modify(twi_button)
         .scale("30px", "30px")
         .centralize()
-        .translate("-500%", "500%")
+        .translate("-500%", "-500%")
+        .setStyles({
+            cursor: "pointer",
+        })
     twi_button.innerHTML = `{{.Twi_button_img}}`
+    twi_button.onclick = function() {
+        location.href = "/chiyoi/twitter"
+    }
 } 
