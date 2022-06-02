@@ -77,7 +77,7 @@ window.onload = function() {
     new modify(browsefile)
         .scale("60px", "30px")
         .centralize()
-        .translate("-200%", "0")
+        .translate("0", "200%")
         .setContent("browse file")
         .setStyles({
             textAlign: "center",
