@@ -1,44 +1,38 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"os"
-	"strings"
 
 	"neko03.com/www/handlers"
 	"neko03.com/www/server"
-	"neko03.com/www/utils"
 )
+
+var Logger = server.Logger
+var debugger = log.New(os.Stderr, "[neko03.www/server]", log.LstdFlags|log.LUTC|log.Lshortfile)
 
 func main() {
     hosts := []string{"www.neko03.com"}
 
-    var mux = handlers.NewMux()
-    mux.Hosts = append(hosts, "localhost:8088")
-    mux.RegisterFavicon(handlers.Favicon())
-    mux.RegisterFileServer("/assets/", "./assets", handlers.SetHeaderGZ)
-    mux.RegisterFileServer("/prototype2/", "./prototype2", func(w http.ResponseWriter, r *http.Request) {
-        handlers.SetHeaderGZ(w, r)
-        if strings.HasSuffix(r.URL.Path, "wasm.gz") {
-            w.Header().Set("Content-Type", "application/wasm")
-        }
+    var mux = http.NewServeMux()
+    handlers.RegisterFavicon(mux, "./assets/chiyoi/icon.png")
+    handlers.RegisterFileServer(mux, "/assets/", "./assets")
+
+    mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+        http.Redirect(w, r, "/chiyoi", http.StatusPermanentRedirect)
+    })
+    mux.HandleFunc("/chiyoi/twitter", func(w http.ResponseWriter, r *http.Request) {
+        http.Redirect(w, r, "https://twitter.com/chiyoi2140", http.StatusPermanentRedirect)
     })
 
-    mux.RegisterHandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-        http.Redirect(w, r, "/chiyoi", http.StatusPermanentRedirect)
-    }, nil)
-    mux.RegisterHandleFunc("/chiyoi/twitter", func(w http.ResponseWriter, r *http.Request) {
-        http.Redirect(w, r, "https://twitter.com/chiyoi2140", http.StatusPermanentRedirect)
-    }, nil)
+    mux.HandleFunc("/chiyoi", handlers.Chiyoi())
+    mux.HandleFunc("/jigokutsuushin", handlers.JSPage("jigokutsuushin", nil))
+    mux.HandleFunc("/shigure", handlers.JSPage("shigure", nil))
+    mux.HandleFunc("/nacho", handlers.Nacho())
+    mux.HandleFunc("/upload", handlers.UploadFile("./assets/tmp"))
 
-    mux.RegisterHandleFunc("/chiyoi", handlers.JSPage("chiyoi", struct { Twi_button_img string } {
-        string(utils.Must(os.ReadFile("./assets/chiyoi/twi_button_img.svg"))),
-    }), nil)
-    mux.RegisterHandleFunc("/jigokutsuushin", handlers.JSPage("jigokutsuushin", nil), nil)
-    mux.RegisterHandleFunc("/shigure", handlers.JSPage("shigure", nil), nil)
-    mux.RegisterHandleFunc("/nacho", handlers.Nacho(), nil)
-
-    var ser = server.NewServers(mux.GetHandler())
+    var ser = server.NewServers(mux)
     ser.RegisterHostWhiteList(hosts...)
 
     server.Start(ser)

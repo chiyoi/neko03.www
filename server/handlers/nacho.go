@@ -2,47 +2,51 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"image"
 	_ "image/jpeg"
 	_ "image/png"
-	"log"
 	"net/http"
 	"os"
+	"path"
 	"path/filepath"
-
-	"neko03.com/www/utils"
 )
 
-type Data struct {
-    Images string
-}
-type Img struct {
+type img_T struct {
     Path string `json:"path"`
     Width int `json:"width"`
     Height int `json:"height"`
 }
 
 func Nacho() http.HandlerFunc {
-    var filepaths = utils.Must(filepath.Glob("assets/nacho/photos/*"))
-    var imgs = make([]Img, 0)
-    for _, filepath := range filepaths {
-        var imgReader = utils.Must(os.Open(filepath))
-        defer imgReader.Close()
-        conf, _, err := image.DecodeConfig(imgReader)
+    filepaths, err := filepath.Glob(path.Join("assets", "nacho", "photos", "*"))
+    if err != nil {
+        logger.Println("Nacho/filepath.Glob:", err)
+    }
+    var imgs = make([]img_T, len(filepaths))
+    for i, file := range filepaths {
+        img, err := os.Open(file)
         if err != nil {
-            log.Printf("err reading %s: %s", filepath, err)
-        } else {
-            imgs = append(imgs, Img{
-                Path: "/"+filepath,
-                Width: conf.Width,
-                Height: conf.Height,
-            })
+            logger.Println("Nacho/os.Open:", err)
+            continue
+        }
+        defer img.Close()
+        conf, _, err := image.DecodeConfig(img)
+        if err != nil {
+            logger.Printf("Nacho/image.DecodeConfig: err reading %s: %s", file, err)
+            continue
+        }
+        imgs[i] = img_T{
+            Path: fmt.Sprintf("/assets/nacho/photos/%s", path.Base(file)),
+            Width: conf.Width,
+            Height: conf.Height,
         }
     }
-    var imgs_b = utils.Must(json.Marshal(imgs))
-    var data = Data{
-        Images: string(imgs_b),
+    imgList, err := json.Marshal(imgs)
+    if err != nil {
+        logger.Println("Nacho/json.Marshal:", err)
     }
-    var handler = JSPage("nacho", data)
-    return handler
+    return JSPage("nacho", struct{Images string} {
+        string(imgList),
+    })
 }

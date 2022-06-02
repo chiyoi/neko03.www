@@ -12,16 +12,16 @@ function session2() {
     }, 1)
 }
 function session2_1() {
-    let origin = neko.style.cursor
-    new modify(neko).setStyle("cursor", "wait")
+    let origin = main.style.cursor
+    new modify(main).setStyle("cursor", "wait")
     window.setTimeout(() => {
-        new modify(neko).setStyle("cursor", origin)
+        new modify(main).setStyle("cursor", origin)
         popup()
     }, 2000)
 }
 var timeout: number
 function popup() {
-    let popupframe = createOn(neko, "popupframe")
+    let popupframe = createOn(main, "popupframe")
     new modify(popupframe)
         .scale("480px", "180px")
         .setStyles({

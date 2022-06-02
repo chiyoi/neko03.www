@@ -5,8 +5,8 @@ window.onload = function() {
         .tag("title", "shigure")
     frameRate = 60
     moveSpeed = 50
-    let font = new FontFace("lolikoneko", ttfurl)
-    font.load().then(main).catch(function(error) {
+    let font = new FontFace("lolikomain", ttfurl)
+    font.load().then(rander).catch(function(error) {
         nofont()
     })
 }
@@ -15,26 +15,26 @@ var frameRate: number
 var moveSpeed: number
 
 var content = "時雨さま大大大大好き！"
-var ttfurl = "url(/assets/shigure/lolikoneko.ttf"
+var ttfurl = "url(/assets/shigure/lolikomain.ttf"
 
-function main(loadedFont: FontFace) {
+function rander(loadedFont: FontFace) {
     document.fonts.add(loadedFont)
-    let text = createOn(neko, "text")
+    let text = createOn(main, "text")
     new modify(text)
         .setContent(content)
         .scale("1600px", "100px")
         .setStyles({
-            "fontFamily": "lolikoneko",
+            "fontFamily": "lolikomain",
             "fontSize": "100px",
             "textAlign": "center",
         })
         .translate("0", "-50%")
-        .position((neko.clientWidth + 100).toString()+"px", "50%")
+        .position((main.clientWidth + 100).toString()+"px", "50%")
     window.setInterval(update, 1000/frameRate)
 }
 
 function nofont() {
-    let text = createOn(neko, "text")
+    let text = createOn(main, "text")
     new modify(text)
         .setContent(content)
         .scale("1600px", "100px")
@@ -43,7 +43,7 @@ function nofont() {
             "textAlign": "center",
         })
         .translate("0", "-50%")
-        .position((neko.clientWidth + 100).toString()+"px", "50%")
+        .position((main.clientWidth + 100).toString()+"px", "50%")
     window.setInterval(update, 1000/frameRate)
 }
 

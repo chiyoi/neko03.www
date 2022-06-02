@@ -10,9 +10,10 @@ import (
 	"time"
 
 	"golang.org/x/crypto/acme/autocert"
-	"neko03.com/www/utils"
 )
 
+var debugger = log.New(os.Stderr, "[neko03.www/server/server]", log.LstdFlags|log.LUTC|log.Lshortfile)
+var Logger = log.New(os.Stdout, "[neko03.www/server]", log.LstdFlags|log.LUTC)
 
 type Servers struct {
     Mux *http.ServeMux
@@ -53,24 +54,28 @@ func (ser *Servers) RegisterHostWhiteList(hosts...string) {
 func (ser *Servers) ServeHTTP() {
     err := ser.HttpServer.ListenAndServe()
     if err != http.ErrServerClosed {
-        log.Fatal(err)
+        debugger.Println("ServeHTTP/ser.HttpServer.ListenAndServe:", err)
     }
 }
 func (ser *Servers) ServeHTTPS() {
     err := ser.HttpsServer.ListenAndServeTLS("", "")
     if err != http.ErrServerClosed {
-        log.Fatal(err)
+        debugger.Println("ServeHTTPS/ser.HttpsServer/ListenAndServeTLS:", err)
     }
 }
 func (ser *Servers) Shutdown(ctx context.Context) {
-    utils.Assert(ser.HttpServer.Shutdown(ctx))
-    utils.Assert(ser.HttpsServer.Shutdown(ctx))
+    if err := ser.HttpServer.Shutdown(ctx); err != nil {
+        debugger.Println("Shutdown/ser.HttpServer.Shutdown:", err)
+    }
+    if err := ser.HttpsServer.Shutdown(ctx); err != nil {
+        debugger.Println("Shutdown/ser.HttpServer.Shutdown:", err)
+    }
 }
 
 func Start(ser *Servers) {
     var ctx = context.Background()
     if os.Getenv("TERM_PROGRAM") == "Apple_Terminal" {
-        log.Println("Serving :8088")
+        Logger.Println("Serving :8088")
         ser.HttpServer.Addr = ":8088"
         redi := http.NewServeMux()
         redi.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -79,14 +84,16 @@ func Start(ser *Servers) {
         go http.ListenAndServe(":http", redi)
         go ser.ServeHTTP()
     } else {
-        log.Println("Serving http/https.")
+        Logger.Println("Serving http/https.")
         go ser.ServeHTTP()
         go ser.ServeHTTPS()
     }
     sig := make(chan os.Signal, 1)
     signal.Notify(sig, os.Interrupt)
-    log.SetPrefix("\r")
-    log.Println(<-sig)
+    origPrefix := Logger.Prefix()
+    Logger.SetPrefix("\r" + origPrefix)
+    Logger.Println(<-sig)
+    Logger.SetPrefix(origPrefix)
     timerCtx, cancel := context.WithTimeout(ctx, 5 * time.Second)
     defer cancel()
     ser.Shutdown(timerCtx)

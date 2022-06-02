@@ -2,7 +2,7 @@ window.oncontextmenu = function(e) {e.preventDefault()}
 window.onload = function() {
     htmlinit()
     init()
-    window.setInterval(main, 1000/frameRate)
+    window.setInterval(mainloop, 1000/frameRate)
 }
 
 type Image_T = {
@@ -23,11 +23,11 @@ var frameRate: number
 
 function init() {
     new append("head")
-        .tag("title", "nachoneko")
-    ymin = Math.floor(0.05 * neko.clientHeight)
-    ymax = Math.floor(0.4 * neko.clientHeight)
-    hmin = Math.floor(0.3 * neko.clientHeight)
-    interval = Math.floor(0.1 * neko.clientWidth)
+        .tag("title", "nachomain")
+    ymin = Math.floor(0.05 * main.clientHeight)
+    ymax = Math.floor(0.4 * main.clientHeight)
+    hmin = Math.floor(0.3 * main.clientHeight)
+    interval = Math.floor(0.1 * main.clientWidth)
     frameRate = 24
     moveSpeed = 2
     images = JSON.parse('{{.Images}}')
@@ -37,11 +37,11 @@ function init() {
     leftid = rightid
 }
 
-function main() {
+function mainloop() {
     let leftimg = laidImgs.get(leftid)
     let rightimg = laidImgs.get(rightid)
     if (!leftimg || !rightimg) {throw new Error("internel error")}
-    if (neko.clientWidth - (rightimg.x + rightimg.width) >= interval) {
+    if (main.clientWidth - (rightimg.x + rightimg.width) >= interval) {
         newRight()
     }
     if (leftimg.x + leftimg.width < 0) {
@@ -60,13 +60,13 @@ function newRight() {
     let index = Math.floor(Math.random() * images.length)
     let img = images[index]
     let y = Math.random() * (ymax - ymin) + ymin
-    let x = neko.clientWidth
-    let hmax = neko.clientHeight - y
+    let x = main.clientWidth
+    let hmax = main.clientHeight - y
     let h = Math.random() * (hmax - hmin) + hmin
     let w = img.width / img.height * h
 
     rightid += 1
-    let imgNode = createOn(neko, `img${rightid}`, "img")
+    let imgNode = createOn(main, `img${rightid}`, "img")
     new modify(imgNode)
         .setAttr("src", img.path)
         .scale(w.toString()+"px", h.toString()+"px")

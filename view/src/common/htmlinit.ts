@@ -1,4 +1,4 @@
-var neko: HTMLDivElement
+var main: HTMLDivElement
 
 function htmlinit() {
     function getOrCreate<K extends "html" | "body" | "head">(tagName: K): HTMLElementTagNameMap[K] {
@@ -11,7 +11,11 @@ function htmlinit() {
         }
         return node
     }
-    remove(getElement("noscript"))
+    try {
+        remove(getElement("noscript"))
+    } catch {
+        console.log("cannot find: div#noscript")
+    }
     let html = getOrCreate("html")
     new modify(html)
         .setAttr("lang", "en")
@@ -25,7 +29,7 @@ function htmlinit() {
         .setStyle("height", "100vh")
         .setStyle("margin", "0")
         .setStyle("overflow", "hidden")
-    neko = createOn(body, "neko")
-    new modify(neko)
+    main = createOn(body, "main")
+    new modify(main)
         .setStyle("height", "100%")
 }

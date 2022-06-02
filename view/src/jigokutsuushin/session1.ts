@@ -1,6 +1,6 @@
 function session1() {
     remove(getElement("video", "video"))
-    let formframe = createOn(neko, "formframe")
+    let formframe = createOn(main, "formframe")
     new modify(formframe)
         .setStyle("opacity", "0")
         .scale("720px", "300px")
