@@ -53,7 +53,7 @@ window.onload = function() {
         .scale("60px", "30px")
         .centralize()
         .translate("200%", "200%")
-        .setContent("upload")
+        .setContent("upload file")
         .setStyles({
             textAlign: "center",
             fontWeight: "10",
@@ -72,6 +72,27 @@ window.onload = function() {
         }
         postRequest(file)
         file = undefined
+    }
+    let browsefile = createOn(main, "browsefile")
+    new modify(browsefile)
+        .scale("60px", "30px")
+        .centralize()
+        .translate("-200%", "0")
+        .setContent("browse file")
+        .setStyles({
+            textAlign: "center",
+            fontWeight: "10",
+            fontSize: "50%",
+            fontFamily: "Menlo",
+            letterSpacing: "0.1rem",
+            borderStyle: "solid",
+            borderColor: "#39c5bb",
+            borderWidth: "1px",
+            borderRadius: "0px 50px 50px 50px",
+            cursor: "pointer",
+        })
+    browsefile.onclick = function(ev: MouseEvent) {
+        location.href = "/assets/tmp"
     }
 
     main.ondragover = function(ev: DragEvent) {
