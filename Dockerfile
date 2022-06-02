@@ -31,6 +31,10 @@ WORKDIR /build/src/shigure
 COPY ./view/src/shigure/* ./
 RUN tsc --outFile ../../target/shigure.js
 
+WORKDIR /build/src/upload
+COPY ./view/src/upload/* ./
+RUN tsc --outFile ../../target/upload.js
+
 WORKDIR /build/target
 RUN for f in *.js; do jsmin --overwrite $f; done
 
