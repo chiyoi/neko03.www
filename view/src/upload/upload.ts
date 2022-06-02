@@ -14,7 +14,7 @@ window.onload = function() {
             fontFamily: "Menlo",
             letterSpacing: "0.1rem",
         })
-    let file: File
+    let file: File | undefined
     let input = document.createElement("input")
     new modify(input)
         .setAttr("type", "file")
@@ -43,6 +43,7 @@ window.onload = function() {
             borderColor: "#39c5bb",
             borderWidth: "1px",
             borderRadius: "0px 50px 50px 50px",
+            cursor: "pointer",
         })
     selectfile.onclick = function(ev: MouseEvent) {
         input.click()
@@ -63,9 +64,14 @@ window.onload = function() {
             borderColor: "#39c5bb",
             borderWidth: "1px",
             borderRadius: "0px 50px 50px 50px",
+            cursor: "pointer",
         })
     uploadfile.onclick = function(ev: MouseEvent) {
+        if (typeof file === "undefined") {
+            return
+        }
         postRequest(file)
+        file = undefined
     }
 
     main.ondragover = function(ev: DragEvent) {
@@ -95,10 +101,21 @@ window.onload = function() {
             .setContent(`ready to upload${" "}"${file.name}"`)
     }
 }
+var interval: number
 function postRequest(file: File) {
+    let loadanime = "..."
     file.arrayBuffer().then(data => {
-        new modify(notice)
-            .setContent("uploading...")
+        interval = window.setInterval(function() {
+            new modify(notice)
+                .setContent(`uploading${loadanime}`)
+            if (loadanime === "...") {
+                loadanime = "."
+            } else if (loadanime === ".") {
+                loadanime = ".."
+            } else if (loadanime === "..") {
+                loadanime = "..."
+            }
+        }, 500)
         fetch("/upload", {
             method: "POST",
             headers: {
@@ -110,6 +127,7 @@ function postRequest(file: File) {
 }
 
 function uploaded(res: Response) {
+    window.clearInterval(interval)
     if (res.ok) {
         new modify(notice)
             .setContent("file uploaded.")
