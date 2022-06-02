@@ -6,7 +6,6 @@ RUN go mod download
 
 COPY ./server/handlers/*.go ./handlers/
 COPY ./server/server/*.go ./server/
-COPY ./server/utils/*.go ./utils/
 COPY ./server/*.go ./
 RUN CGO_ENABLED=0 go build -o ./target/www
 
