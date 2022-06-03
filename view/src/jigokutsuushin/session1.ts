@@ -1,12 +1,12 @@
 function session1() {
-    remove(getElement("video", "video"))
-    let formframe = createOn(main, "formframe")
-    new modify(formframe)
+    utils.remove(utils.getElement("video", "video"))
+    let formframe = utils.append(app, "formframe")
+    utils.edit(formframe)
         .setStyle("opacity", "0")
         .scale("720px", "300px")
         .centralize()
-    let label = createOn(formframe, "label", "p")
-    new modify(label)
+    let label = utils.append(formframe, "label", "p")
+    utils.edit(label)
         .scale("720px", "50px")
         .setContent("あなたの怨み、晴らします。")
         .setStyles({
@@ -20,8 +20,8 @@ function session1() {
         .position("50%", "0")
         .translate("4%", "0")
         .disablePointer()
-    let input = createOn(formframe, "input", "input")
-    new modify(input)
+    let input = utils.append(formframe, "input", "input")
+    utils.edit(input)
         .scale("400px", "40px")
         .setAttr("type", "text")
         .setStyles({
@@ -33,8 +33,8 @@ function session1() {
         })
         .centralize()
         .translate("0", "-20%")
-    let submmit = createOn(formframe, "submmit", "button")
-    new modify(submmit)
+    let submmit = utils.append(formframe, "submmit", "button")
+    utils.edit(submmit)
         .scale("110px", "45px")
         .setContent("送信")
         .setStyles({
@@ -50,7 +50,7 @@ function session1() {
     let formopacity = 0
     let formfadein = window.setInterval(() => {
         formopacity += 0.01
-        new modify(formframe).setStyle("opacity", `${formopacity}`)
+        utils.edit(formframe).setStyle("opacity", `${formopacity}`)
         if (Number(formframe.style.opacity) >= 1) {
             window.clearInterval(formfadein)
         }

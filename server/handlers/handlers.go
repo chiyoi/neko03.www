@@ -21,6 +21,15 @@ const baseHTML = `
 `
 var logger = log.New(os.Stderr, "[neko03.www/server/handlers]", log.Ldate|log.Ltime|log.LUTC|log.Lshortfile)
 
+func RegisterHandler(mux *http.ServeMux, pattern string, handlerFunc http.HandlerFunc) {
+    mux.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
+        if r.URL.Path != pattern {
+            http.NotFound(w, r)
+            return
+        }
+        handlerFunc(w, r)
+    })
+}
 func RegisterFileServer(mux *http.ServeMux, pattern string, dir string) {
     var fs = http.StripPrefix(pattern, http.FileServer(http.Dir(dir)))
     mux.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {

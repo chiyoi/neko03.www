@@ -1,103 +1,115 @@
-type StyleList = Exclude<keyof CSSStyleDeclaration, "parentRule" | "length" | "getPropertyPriority" | "getPropertyValue" | "item" | "removeProperty" | "setProperty" | number | typeof Symbol.iterator>;
-type StyleDeclare = Omit<CSSStyleDeclaration, "parentRule" | "length" | "getPropertyPriority" | "getPropertyValue" | "item" | "removeProperty" | "setProperty" | number | typeof Symbol.iterator>;
-type ContentElementTagNameMap = Omit<HTMLElementTagNameMap, "html" | "head" | "body">;
+type ChangableStyle = Omit<CSSStyleDeclaration, "parentRule" | "length" | "getPropertyPriority" | "getPropertyValue" | "item" | "removeProperty" | "setProperty" | number | typeof Symbol.iterator>;
 
-function createOn<K extends Exclude<keyof ContentElementTagNameMap, "div">>(parentNode: HTMLElement, id: string, tagName: K): ContentElementTagNameMap[K]
-function createOn(patentNode: HTMLElement, id: string): HTMLDivElement
-function createOn<K extends keyof ContentElementTagNameMap>(parentNode: HTMLElement, id: string, tagName?: K): HTMLElementTagNameMap[K] | HTMLDivElement {
-    let node: HTMLElementTagNameMap[K] | HTMLDivElement
-    if (tagName) {
-        node = document.createElement(tagName)
-        node.id = id
-    } else {
-        node = document.createElement("div")
-        node.id = id
-    }
-    parentNode.appendChild(node)
-    return node
-}
-
-function addStyles(css: string) {
-    let styleNode = getElement("style", "style")
-    if (styleNode === undefined) {
-        let head = document.getElementsByTagName("head")[0]
-        styleNode = createOn(head, "style", "style")
-        new modify(styleNode)
-            .setAttr("type", "text/css")
-    }
-    new modify(styleNode)
-        .addContent(css)
-}
-
-function getElement<K extends keyof HTMLElementTagNameMap>(id: string, tagName: K): HTMLElementTagNameMap[K]
-function getElement(id: string): HTMLDivElement
-function getElement<K extends keyof HTMLElementTagNameMap>(id: string, tagName?: K): HTMLElementTagNameMap[K] | HTMLDivElement {
-    let node: HTMLElementTagNameMap[K] | HTMLDivElement
-    let node_ = document.getElementById(id)
-    let tagName_: string
-    if (tagName) {
-        tagName_ = tagName
-    } else {
-        tagName_ = "div"
-    }
-    if (node_ && node_.tagName.toLowerCase() === tagName_.toLowerCase()) {
-        node = node_ as HTMLElementTagNameMap[K]
-    } else {
-        throw new Error(`element not exist: ${tagName_}#${id}.`)
-    }
-    return node
-}
-
-function remove(element: HTMLElement) {
-    if (element.parentNode) {
-        element.parentNode.removeChild(element)
-    } else {
-        throw new Error(`cannot remove ${element}`)
+class ElementNotExistError extends Error {
+    constructor(tagName: keyof HTMLElementTagNameMap, id: string) {
+        super("element not exist: "+tagName+"#"+id)
     }
 }
-
-class modify<E extends HTMLElement> {
-    private node: E | HTMLBodyElement
-    constructor(node: E | "body") {
-        if (node === "body") {
-            this.node = document.getElementsByTagName("body")[0]
+class NoParentNodeError extends Error {
+    constructor(elem: HTMLElement) {
+        super(elem.nodeName)
+    }
+}
+class DefineUtils {
+    append<K extends keyof HTMLElementTagNameMap>(parentNode: HTMLElement, id: string, tagName: K): HTMLElementTagNameMap[K]
+    append(patentNode: HTMLElement, id: string): HTMLDivElement
+    append<K extends keyof HTMLElementTagNameMap>(parentNode: HTMLElement, id: string, tagName?: K): HTMLElementTagNameMap[K] | HTMLDivElement {
+        let elem: HTMLElementTagNameMap[K] | HTMLDivElement
+        if (typeof tagName === "undefined") {
+            elem = document.createElement("div")
         } else {
-            this.node = node
+            elem = document.createElement(tagName)
+        }
+        elem.id = id
+        parentNode.appendChild(elem)
+        return elem
+    }
+
+    addStyleSheet(css: string) {
+        let styleNode = utils.getElement("style", "style")
+        if (styleNode === undefined) {
+            let head = document.getElementsByTagName("head")[0]
+            styleNode = utils.append(head, "style", "style")
+            utils.edit(styleNode)
+                .setAttr("type", "text/css")
+        }
+        utils.edit(styleNode)
+            .addContent(css)
+    }
+
+    getElement<K extends keyof HTMLElementTagNameMap>(id: string, tagName: K): HTMLElementTagNameMap[K]
+    getElement(id: string): HTMLDivElement
+    getElement<K extends keyof HTMLElementTagNameMap>(id: string, tagName?: K): HTMLElementTagNameMap[K] | HTMLDivElement {
+        let elem = document.getElementById(id)
+        if (typeof tagName === "undefined") {
+            if (elem === null || elem.tagName.toLowerCase() !== "div") {
+                throw new ElementNotExistError("div", id)
+            }
+            return <HTMLDivElement>elem
+        } else {
+            if (elem === null || elem.tagName.toLowerCase() !== tagName.toLowerCase()) {
+                throw new ElementNotExistError(tagName, id)
+            }
+            return <HTMLElementTagNameMap[K]>elem
         }
     }
-    setAttr(attribute: string, value: string): modify<E> {
-        this.node.setAttribute(attribute, value)
+
+    remove(elem: HTMLElement) {
+        if (elem.parentNode === null) {
+            throw new NoParentNodeError(elem)
+        }
+        elem.parentNode.removeChild(elem)
+    }
+
+    edit<E extends HTMLElement>(elem: E) {
+        return new ElementEditor(elem)
+    }
+    editHead() {
+        return new HeadEditor()
+    }
+}
+var utils = new DefineUtils()
+
+class ElementEditor<E extends HTMLElement> {
+    private elem: E
+    constructor(elem: E) {
+        this.elem = elem
+    }
+    setAttr(attr: string, value: string) {
+        this.elem.setAttribute(attr, value)
         return this
     }
-    setContent(content: string): modify<E> {
-        this.node.textContent = content
+    setAttrs(attrs: {[index: string]: string}) {
+        for (let attr in attrs) {
+            this.setAttr(attr, attrs[attr])
+        }
         return this
     }
-    addContent(content: string): modify<E> {
-        this.node.textContent += content
+    setContent(content: string) {
+        this.elem.textContent = content
         return this
     }
-    setStyle(style: StyleList, value: string): modify<E> {
-        this.node.style[style] = value
+    addContent(content: string) {
+        this.elem.textContent += content
         return this
     }
-    setStyles(styles: Partial<StyleDeclare>): modify<E> {
-        let key: keyof StyleDeclare
+    setStyle(style: keyof ChangableStyle, value: string) {
+        this.elem.style[style] = value
+        return this
+    }
+    setStyles(styles: Partial<ChangableStyle>) {
+        let key: keyof ChangableStyle
         for (key in styles) {
-            this.node.style[key] = styles[key]!
+            this.elem.style[key] = styles[key]!
         }
         return this
     }
-    appendStyle(style: StyleList, value: string): modify<E> {
-        this.node.style[style] += value
-        return this
-    }
-    scale(width: string, height: string): modify<E> {
+    scale(width: string, height: string) {
         this.setStyle("width", width)
             .setStyle("height", height)
         return this
     }
-    anchor(pos: "middle" | "top" | "left" | "right" | "bottom"): modify<E> {
+    anchor(pos: "middle" | "top" | "left" | "right" | "bottom") {
         switch (pos) {
             case "middle":
                 this.translate("-50%", "-50%")
@@ -117,68 +129,48 @@ class modify<E extends HTMLElement> {
         }
         return this
     }
-    offset(x: string, y: string): modify<E> {
-        this.setStyle("position", "relative")
-            .setStyle("top", y)
-            .setStyle("left", x)
+    position(x: string, y: string) {
+        this.setStyles({
+            position: "absolute",
+            left: x,
+            top: y,
+        })
         return this
     }
-    position(x: string, y: string): modify<E> {
-        this.setStyle("position", "absolute")
-            .setStyle("top", y)
-            .setStyle("left", x)
+    translate(x: string, y: string) {
+        let original = this.elem.style.transform
+        this.setStyle("transform", original+`translate(${x},${y})`)
         return this
     }
-    translate(x: string, y: string): modify<E> {
-        this.appendStyle("transform", `translate(${x},${y})`)
-        return this
-    }
-    centralize(): modify<E> {
+    centralize() {
         this.anchor("middle")
             .position("50%", "50%")
         return this
     }
-    disablePointer(): modify<E> {
-        this.setStyle("pointerEvents", "none")
-            .setStyle("webkitUserSelect", "none")
+    disablePointer() {
+        this.setStyles({
+            cursor: "none",
+            webkitUserSelect: "none",
+        })
         return this
     }
 }
 
-class append<E extends HTMLElement> {
-    private node: E | HTMLHeadElement
-    constructor(node: E | "head") {
-        if (node === "head") {
-            this.node = document.getElementsByTagName("head")[0]
-        } else {
-            this.node = node
-        }
+class HeadEditor {
+    private head: HTMLHeadElement
+    constructor() {
+        this.head = utils.getElement("head", "head")
     }
-    tag(tagName: keyof HTMLElementTagNameMap, attribute: Map<string, string>): append<E>
-    tag(tagName: keyof HTMLElementTagNameMap, content: string): append<E>
-    tag(tagName: keyof HTMLElementTagNameMap, attribute: Map<string, string>, content: string): append<E>
-    tag(tagName: keyof HTMLElementTagNameMap, attributeOrContent: Map<string, string> | string, content?: string): append<E> {
-        let child = document.createElement(tagName)
-        if (attributeOrContent) {
-            if (typeof attributeOrContent === "string") {
-                child.textContent = attributeOrContent
-            } else {
-                attributeOrContent.forEach((value, key) => child.setAttribute(key, value))
-                content && (child.textContent = content)
-            }
-        } else {
-            child.textContent = attributeOrContent!
-        }
-        this.node.appendChild(child)
+    title(name: string) {
+        utils.edit(utils.append(this.head, "title", "title"))
+            .setContent(name)
         return this
     }
-    favicon(path: string): append<E> {
-        let favicon = document.createElement("link")
-        new modify(favicon)
+    favicon(path: string) {
+        utils.edit(utils.append(this.head, "favicon", "link"))
             .setAttr("rel", "shortcut icon")
             .setAttr("type", "image/png")
             .setAttr("href", path)
-        this.node.appendChild(favicon)
         return this
     }
 }

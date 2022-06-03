@@ -1,28 +1,28 @@
 function session2() {
-    let formframe = getElement("formframe")
+    let formframe = utils.getElement("formframe")
     let formopacity = 1
     let formfadeout = window.setInterval(() => {
         formopacity -= 0.01
-        new modify(formframe).setStyle("opacity", `${formopacity}`)
+        utils.edit(formframe).setStyle("opacity", `${formopacity}`)
         if (Number(formframe.style.opacity) <= 0) {
             window.clearInterval(formfadeout)
-            remove(formframe)
+            utils.remove(formframe)
             session2_1()
         }
     }, 1)
 }
 function session2_1() {
-    let origin = main.style.cursor
-    new modify(main).setStyle("cursor", "wait")
+    let origin = app.style.cursor
+    utils.edit(app).setStyle("cursor", "wait")
     window.setTimeout(() => {
-        new modify(main).setStyle("cursor", origin)
+        utils.edit(app).setStyle("cursor", origin)
         popup()
     }, 2000)
 }
 var timeout: number
 function popup() {
-    let popupframe = createOn(main, "popupframe")
-    new modify(popupframe)
+    let popupframe = utils.append(app, "popupframe")
+    utils.edit(popupframe)
         .scale("480px", "180px")
         .setStyles({
             background: "#d6d6d6",
@@ -30,8 +30,8 @@ function popup() {
             borderRadius:"3px",
         })
         .centralize()
-    let popupprop = createOn(popupframe, "popupprop", "p")
-    new modify(popupprop)
+    let popupprop = utils.append(popupframe, "popupprop", "p")
+    utils.edit(popupprop)
         .scale("480px", "45px")
         .setContent("強い怨念が無ければ、受けいれない。")
         .setStyles({
@@ -42,8 +42,8 @@ function popup() {
         })
         .centralize()
         .translate("0", "-100%")
-    let button = createOn(popupframe, "button", "button")
-    new modify(button)
+    let button = utils.append(popupframe, "button", "button")
+    utils.edit(button)
         .scale("50px", "31px")
         .setContent("確認")
         .setStyles({

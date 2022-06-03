@@ -19,18 +19,18 @@ func main() {
     handlers.RegisterFavicon(mux, "./assets/chiyoi/icon.png")
     handlers.RegisterFileServer(mux, "/assets/", "./assets")
 
-    mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+    handlers.RegisterHandler(mux, "/", func(w http.ResponseWriter, r *http.Request) {
         http.Redirect(w, r, "/chiyoi", http.StatusPermanentRedirect)
     })
-    mux.HandleFunc("/chiyoi/twitter", func(w http.ResponseWriter, r *http.Request) {
+    handlers.RegisterHandler(mux, "/chiyoi/twitter", func(w http.ResponseWriter, r *http.Request) {
         http.Redirect(w, r, "https://twitter.com/chiyoi2140", http.StatusPermanentRedirect)
     })
 
-    mux.HandleFunc("/chiyoi", handlers.Chiyoi())
-    mux.HandleFunc("/jigokutsuushin", handlers.JSPage("jigokutsuushin", nil))
-    mux.HandleFunc("/shigure", handlers.JSPage("shigure", nil))
-    mux.HandleFunc("/nacho", handlers.Nacho())
-    mux.HandleFunc("/upload", handlers.UploadFile("./assets/tmp"))
+    handlers.RegisterHandler(mux, "/chiyoi", handlers.Chiyoi())
+    handlers.RegisterHandler(mux, "/jigokutsuushin", handlers.JSPage("jigokutsuushin", nil))
+    handlers.RegisterHandler(mux, "/shigure", handlers.JSPage("shigure", nil))
+    handlers.RegisterHandler(mux, "nacho", handlers.Nacho())
+    handlers.RegisterHandler(mux, "/upload", handlers.UploadFile("./assets/tmp"))
 
     var ser = server.NewServers(mux)
     ser.RegisterHostWhiteList(hosts...)

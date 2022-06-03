@@ -22,12 +22,12 @@ var leftid: number
 var frameRate: number
 
 function init() {
-    new append("head")
-        .tag("title", "nachomain")
-    ymin = Math.floor(0.05 * main.clientHeight)
-    ymax = Math.floor(0.4 * main.clientHeight)
-    hmin = Math.floor(0.3 * main.clientHeight)
-    interval = Math.floor(0.1 * main.clientWidth)
+    utils.editHead()
+        .title("nachoneko")
+    ymin = Math.floor(0.05 * app.clientHeight)
+    ymax = Math.floor(0.4 * app.clientHeight)
+    hmin = Math.floor(0.3 * app.clientHeight)
+    interval = Math.floor(0.1 * app.clientWidth)
     frameRate = 24
     moveSpeed = 2
     images = JSON.parse('{{.Images}}')
@@ -41,7 +41,7 @@ function mainloop() {
     let leftimg = laidImgs.get(leftid)
     let rightimg = laidImgs.get(rightid)
     if (!leftimg || !rightimg) {throw new Error("internel error")}
-    if (main.clientWidth - (rightimg.x + rightimg.width) >= interval) {
+    if (app.clientWidth - (rightimg.x + rightimg.width) >= interval) {
         newRight()
     }
     if (leftimg.x + leftimg.width < 0) {
@@ -52,7 +52,7 @@ function mainloop() {
 
 function moveImg(img: HTMLImageElement) {
     let newx = img.x - moveSpeed
-    new modify(img)
+    utils.edit(img)
         .position(newx.toString()+"px", img.style["top"])
 }
 
@@ -60,14 +60,14 @@ function newRight() {
     let index = Math.floor(Math.random() * images.length)
     let img = images[index]
     let y = Math.random() * (ymax - ymin) + ymin
-    let x = main.clientWidth
-    let hmax = main.clientHeight - y
+    let x = app.clientWidth
+    let hmax = app.clientHeight - y
     let h = Math.random() * (hmax - hmin) + hmin
     let w = img.width / img.height * h
 
     rightid += 1
-    let imgNode = createOn(main, `img${rightid}`, "img")
-    new modify(imgNode)
+    let imgNode = utils.append(app, `img${rightid}`, "img")
+    utils.edit(imgNode)
         .setAttr("src", img.path)
         .scale(w.toString()+"px", h.toString()+"px")
         .position(x.toString()+"px", y.toString()+"px")
@@ -77,7 +77,7 @@ function removeLeft() {
     if (!laidImgs.has(leftid)) {
         throw new Error(`cannot remove image: ${leftid}`)
     }
-    remove(laidImgs.get(leftid)!)
+    utils.remove(laidImgs.get(leftid)!)
     laidImgs.delete(leftid)
     leftid += 1
 }

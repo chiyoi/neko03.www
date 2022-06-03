@@ -1,9 +1,10 @@
-
 var notice: HTMLDivElement
 window.onload = function() {
     htmlinit()
-    notice = createOn(main, "notice")
-    new modify(notice)
+    utils.editHead()
+        .title("upload")
+    notice = utils.append(app, "notice")
+    utils.edit(notice)
         .scale("1000px", "50px")
         .centralize()
         .setContent("drop file here to upload.")
@@ -16,7 +17,7 @@ window.onload = function() {
         })
     let file: File | undefined
     let input = document.createElement("input")
-    new modify(input)
+    utils.edit(input)
         .setAttr("type", "file")
     input.onchange = function(ev: Event) {
         let curr = ev.target as HTMLInputElement
@@ -24,11 +25,11 @@ window.onload = function() {
             throw new Error("no file")
         }
         file = curr.files[0]
-        new modify(notice)
-            .setContent(`ready to upload${" "}"${file.name}"`)
+        utils.edit(notice)
+            .setContent("ready to upload "+file.name)
     }
-    let selectfile = createOn(main, "selectfile")
-    new modify(selectfile)
+    let selectfile = utils.append(app, "selectfile")
+    utils.edit(selectfile)
         .scale("60px", "30px")
         .centralize()
         .translate("-200%", "200%")
@@ -48,8 +49,8 @@ window.onload = function() {
     selectfile.onclick = function(ev: MouseEvent) {
         input.click()
     }
-    let uploadfile = createOn(main, "uploadfile")
-    new modify(uploadfile)
+    let uploadfile = utils.append(app, "uploadfile")
+    utils.edit(uploadfile)
         .scale("60px", "30px")
         .centralize()
         .translate("200%", "200%")
@@ -73,8 +74,8 @@ window.onload = function() {
         postRequest(file)
         file = undefined
     }
-    let browsefile = createOn(main, "browsefile")
-    new modify(browsefile)
+    let browsefile = utils.append(app, "browsefile")
+    utils.edit(browsefile)
         .scale("60px", "30px")
         .centralize()
         .translate("0", "200%")
@@ -95,22 +96,22 @@ window.onload = function() {
         location.href = "/assets/tmp"
     }
 
-    main.ondragover = function(ev: DragEvent) {
+    app.ondragover = function(ev: DragEvent) {
         ev.preventDefault()
-        new modify(main)
+        utils.edit(app)
             .setStyles({
                 cursor: "copy",
             })
     }
-    main.ondragleave = function() {
-        new modify(main)
+    app.ondragleave = function() {
+        utils.edit(app)
             .setStyles({
                 cursor: "",
             })
     }
-    main.ondrop = function(ev: DragEvent) {
+    app.ondrop = function(ev: DragEvent) {
         ev.preventDefault()
-        new modify(main)
+        utils.edit(app)
             .setStyles({
                 cursor: "",
             })
@@ -118,8 +119,8 @@ window.onload = function() {
             throw new Error("no data transfer")
         }
         file = ev.dataTransfer.files[0]
-        new modify(notice)
-            .setContent(`ready to upload${" "}"${file.name}"`)
+        utils.edit(notice)
+            .setContent("ready to upload "+file.name)
     }
 }
 var interval: number
@@ -127,7 +128,7 @@ function postRequest(file: File) {
     let loadanime = "..."
     file.arrayBuffer().then(data => {
         interval = window.setInterval(function() {
-            new modify(notice)
+            utils.edit(notice)
                 .setContent(`uploading${loadanime}`)
             if (loadanime === "...") {
                 loadanime = "."
@@ -150,10 +151,10 @@ function postRequest(file: File) {
 function uploaded(res: Response) {
     window.clearInterval(interval)
     if (res.ok) {
-        new modify(notice)
+        utils.edit(notice)
             .setContent("file uploaded.")
     } else {
-        new modify(notice)
-            .setContent(`error:${" "}[${res.status}]${" "}${res.statusText}`)
+        utils.edit(notice)
+            .setContent("error: ["+res.status+"] "+res.statusText)
     }
 }
