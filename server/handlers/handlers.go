@@ -11,6 +11,7 @@ import (
 
 const baseHTML = `
 <!DOCTYPE html>
+<html>
   <head>
     <script>%s</script>
   </head>
