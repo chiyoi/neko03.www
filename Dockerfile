@@ -42,7 +42,6 @@ FROM alpine
 WORKDIR /neko
 COPY --from=0 /build/target/www ./
 COPY ./assets/assets ./assets
-COPY ./gopkg/gopkg ./gopkg
 COPY --from=1 /build/target/* ./view/
 
 CMD ["./www"]
