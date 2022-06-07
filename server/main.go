@@ -34,8 +34,8 @@ func main() {
     handlers.RegisterHandler(mux, "/chiyoi", handlers.Chiyoi())
     handlers.RegisterHandler(mux, "/jigokutsuushin", handlers.JSPage("jigokutsuushin", nil))
     handlers.RegisterHandler(mux, "/shigure", handlers.JSPage("shigure", nil))
-    handlers.RegisterHandler(mux, "nacho", handlers.Nacho())
-    handlers.RegisterHandler(mux, "/upload", handlers.UploadFile("./assets/tmp"))
+    handlers.RegisterHandler(mux, "/nacho", handlers.Nacho())
+    handlers.RegisterHandler(mux, "/upload", handlers.UploadFile("./disk"))
 
     var ser = server.NewServers(mux)
     ser.RegisterHostWhiteList(hosts...)
