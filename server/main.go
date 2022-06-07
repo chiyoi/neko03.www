@@ -18,6 +18,7 @@ func main() {
     var mux = http.NewServeMux()
     handlers.RegisterFavicon(mux, "./assets/chiyoi/icon.png")
     handlers.RegisterFileServer(mux, "/assets/", "./assets")
+    handlers.RegisterFileServer(mux, "/gopkg/", "./gopkg")
 
     handlers.RegisterHandler(mux, "/", func(w http.ResponseWriter, r *http.Request) {
         http.Redirect(w, r, "/chiyoi", http.StatusPermanentRedirect)
