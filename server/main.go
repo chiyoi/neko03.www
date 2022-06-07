@@ -17,8 +17,11 @@ func main() {
 
     var mux = http.NewServeMux()
 
-    handlers.RegisterFavicon(mux, "./assets/chiyoi/icon.png")
+    handlers.RegisterFileServer(mux, "/disk/", "./disk")
+    handlers.RegisterFileServer(mux, "/git/", "./git")
     handlers.RegisterFileServer(mux, "/assets/", "./assets")
+
+    handlers.RegisterFavicon(mux, "./assets/chiyoi/icon.png")
 
 
     handlers.RegisterHandler(mux, "/", func(w http.ResponseWriter, r *http.Request) {
