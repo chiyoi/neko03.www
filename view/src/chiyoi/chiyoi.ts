@@ -48,7 +48,7 @@ window.onload = function() {
     utils.edit(upload_button)
         .scale("60px", "30px")
         .centralize()
-        .translate("-600%", "0")
+        .translate("-100%", "300%")
         .setStyles({
             textAlign: "center",
             fontWeight: "10",
