@@ -24,9 +24,11 @@ function htmlinit() {
         .setAttr("charset", "utf-8")
     let body = utils.getElement("body", "body")
     utils.edit(body)
-        .setStyle("height", "100vh")
-        .setStyle("margin", "0")
-        .setStyle("overflow", "hidden")
+        .setStyles({
+            height: "100vh",
+            margin: "0",
+            overflow: "hidden",
+        })
     app = utils.append(body, "app")
     utils.edit(app)
         .setStyles({
