@@ -93,7 +93,7 @@ window.onload = function() {
             cursor: "pointer",
         })
     browsefile.onclick = function(ev: MouseEvent) {
-        location.href = "/assets/tmp"
+        location.href = "/disk"
     }
 
     app.ondragover = function(ev: DragEvent) {
