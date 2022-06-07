@@ -4,10 +4,10 @@ window.onload = function() {
     utils.editHead()
         .title("upload")
     notice = utils.append(app, "notice")
+    notice.innerText = "drop file here to upload."
     utils.edit(notice)
         .scale("1000px", "50px")
         .centralize()
-        .setContent("drop file here to upload.")
         .setStyles({
             textAlign: "center",
             fontWeight: "200",
@@ -25,15 +25,14 @@ window.onload = function() {
             throw new Error("no file")
         }
         file = curr.files[0]
-        utils.edit(notice)
-            .setContent("ready to upload "+file.name)
+        notice.innerText = "ready to upload "+file.name
     }
     let selectfile = utils.append(app, "selectfile")
+    selectfile.innerText = "select file"
     utils.edit(selectfile)
         .scale("60px", "30px")
         .centralize()
         .translate("-200%", "200%")
-        .setContent("select file")
         .setStyles({
             textAlign: "center",
             fontWeight: "10",
@@ -50,11 +49,11 @@ window.onload = function() {
         input.click()
     }
     let uploadfile = utils.append(app, "uploadfile")
+    uploadfile.innerText = "upload file"
     utils.edit(uploadfile)
         .scale("60px", "30px")
         .centralize()
         .translate("200%", "200%")
-        .setContent("upload file")
         .setStyles({
             textAlign: "center",
             fontWeight: "10",
@@ -75,11 +74,11 @@ window.onload = function() {
         file = undefined
     }
     let browsefile = utils.append(app, "browsefile")
+    browsefile.innerText = "browse file"
     utils.edit(browsefile)
         .scale("60px", "30px")
         .centralize()
         .translate("0", "200%")
-        .setContent("browse file")
         .setStyles({
             textAlign: "center",
             fontWeight: "10",
@@ -119,8 +118,7 @@ window.onload = function() {
             throw new Error("no data transfer")
         }
         file = ev.dataTransfer.files[0]
-        utils.edit(notice)
-            .setContent("ready to upload "+file.name)
+        notice.innerText = "ready to upload "+file.name
     }
 }
 var interval: number
@@ -128,8 +126,7 @@ function postRequest(file: File) {
     let loadanime = "..."
     file.arrayBuffer().then(data => {
         interval = window.setInterval(function() {
-            utils.edit(notice)
-                .setContent(`uploading${loadanime}`)
+            notice.innerText = `uploading${loadanime}`
             if (loadanime === "...") {
                 loadanime = "."
             } else if (loadanime === ".") {
@@ -144,17 +141,17 @@ function postRequest(file: File) {
                 "filename": file.name,
             },
             body: data,
-        }).then(uploaded)
+        }).then(uploaded).catch(err => {
+            console.log(err)
+        })
     })
 }
 
 function uploaded(res: Response) {
     window.clearInterval(interval)
     if (res.ok) {
-        utils.edit(notice)
-            .setContent("file uploaded.")
+        notice.innerText = "file uploaded."
     } else {
-        utils.edit(notice)
-            .setContent("error: ["+res.status+"] "+res.statusText)
+        notice.innerText = "error: ["+res.status+"] "+res.statusText
     }
 }

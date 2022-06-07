@@ -5,7 +5,9 @@ window.onload = function() {
         .title("地獄通信")
         .favicon("/assets/jigokutsuushin/icon.png")
     utils.edit(app)
-        .setStyle("background", "#050006")
+        .setStyles({
+            background: "#050006",
+        })
     playopening()
 }
 

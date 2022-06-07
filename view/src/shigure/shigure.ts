@@ -20,8 +20,8 @@ var ttfurl = "url(/assets/shigure/lolikoneko.ttf"
 function rander(loadedFont: FontFace) {
     document.fonts.add(loadedFont)
     let text = utils.append(app, "text")
+    text.innerText = content
     utils.edit(text)
-        .setContent(content)
         .scale("1600px", "100px")
         .setStyles({
             "fontFamily": "lolikoapp",
@@ -35,8 +35,8 @@ function rander(loadedFont: FontFace) {
 
 function nofont() {
     let text = utils.append(app, "text")
+    text.innerText = content
     utils.edit(text)
-        .setContent(content)
         .scale("1600px", "100px")
         .setStyles({
             "fontSize": "100px",

@@ -2,13 +2,15 @@ function session1() {
     utils.remove(utils.getElement("video", "video"))
     let formframe = utils.append(app, "formframe")
     utils.edit(formframe)
-        .setStyle("opacity", "0")
+        .setStyles({
+            opacity: "0",
+        })
         .scale("720px", "300px")
         .centralize()
     let label = utils.append(formframe, "label", "p")
+    label.innerText = "あなたの怨み、晴らします。"
     utils.edit(label)
         .scale("720px", "50px")
-        .setContent("あなたの怨み、晴らします。")
         .setStyles({
             textAlign: "center",
             fontFamily: "Times",
@@ -34,9 +36,9 @@ function session1() {
         .centralize()
         .translate("0", "-20%")
     let submmit = utils.append(formframe, "submmit", "button")
+    submmit.innerText = "送信"
     utils.edit(submmit)
         .scale("110px", "45px")
-        .setContent("送信")
         .setStyles({
             textAlign: "center",
             fontFamily: "Times",
@@ -50,7 +52,10 @@ function session1() {
     let formopacity = 0
     let formfadein = window.setInterval(() => {
         formopacity += 0.01
-        utils.edit(formframe).setStyle("opacity", `${formopacity}`)
+        utils.edit(formframe)
+            .setStyles({
+                opacity: `${formopacity}`,
+            })
         if (Number(formframe.style.opacity) >= 1) {
             window.clearInterval(formfadein)
         }

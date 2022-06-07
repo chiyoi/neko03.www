@@ -33,8 +33,7 @@ class DefineUtils {
             utils.edit(styleNode)
                 .setAttr("type", "text/css")
         }
-        utils.edit(styleNode)
-            .addContent(css)
+        styleNode.innerHTML += css
     }
 
     getElement<K extends keyof HTMLElementTagNameMap>(id: string, tagName: K): HTMLElementTagNameMap[K]
@@ -85,18 +84,6 @@ class ElementEditor<E extends HTMLElement> {
         }
         return this
     }
-    setContent(content: string) {
-        this.elem.textContent = content
-        return this
-    }
-    addContent(content: string) {
-        this.elem.textContent += content
-        return this
-    }
-    setStyle(style: keyof ChangableStyle, value: string) {
-        this.elem.style[style] = value
-        return this
-    }
     setStyles(styles: Partial<ChangableStyle>) {
         let key: keyof ChangableStyle
         for (key in styles) {
@@ -105,8 +92,10 @@ class ElementEditor<E extends HTMLElement> {
         return this
     }
     scale(width: string, height: string) {
-        this.setStyle("width", width)
-            .setStyle("height", height)
+        this.setStyles({
+            width: width,
+            height: height,
+        })
         return this
     }
     anchor(pos: "middle" | "top" | "left" | "right" | "bottom") {
@@ -139,7 +128,9 @@ class ElementEditor<E extends HTMLElement> {
     }
     translate(x: string, y: string) {
         let original = this.elem.style.transform
-        this.setStyle("transform", original+`translate(${x},${y})`)
+        this.setStyles({
+            transform: original+`translate(${x},${y})`,
+        })
         return this
     }
     centralize() {
@@ -162,8 +153,7 @@ class HeadEditor {
         this.head = utils.getElement("head", "head")
     }
     title(name: string) {
-        utils.edit(utils.append(this.head, "title", "title"))
-            .setContent(name)
+        utils.append(this.head, "title", "title").innerHTML = name
         return this
     }
     favicon(path: string) {
