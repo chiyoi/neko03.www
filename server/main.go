@@ -1,16 +1,10 @@
 package main
 
 import (
-	"log"
-	"net/http"
-	"os"
-
-	"neko03.com/www/handlers"
-	"neko03.com/www/server"
+    "neko03.com/www/handlers"
+    "neko03.com/www/server"
+    "net/http"
 )
-
-var Logger = server.Logger
-var debugger = log.New(os.Stderr, "[neko03.www/server]", log.LstdFlags|log.LUTC|log.Lshortfile)
 
 func main() {
     hosts := []string{"www.neko03.com"}
@@ -22,7 +16,6 @@ func main() {
     handlers.RegisterFileServer(mux, "/assets/", "./assets")
 
     handlers.RegisterFavicon(mux, "./assets/chiyoi/icon.png")
-
 
     handlers.RegisterHandler(mux, "/", func(w http.ResponseWriter, r *http.Request) {
         http.Redirect(w, r, "/chiyoi", http.StatusPermanentRedirect)

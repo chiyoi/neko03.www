@@ -16,7 +16,7 @@ func UploadFile(saveDir string) http.HandlerFunc {
         case http.MethodPut, http.MethodPost:
             data, err := ioutil.ReadAll(r.Body)
             if err != nil {
-                logger.Println("UploadFile/ioutil.ReadAll:", err)
+                debugger.Println("UploadFile/ioutil.ReadAll:", err)
                 InternalServerError(w, r)
                 return
             }
@@ -26,17 +26,20 @@ func UploadFile(saveDir string) http.HandlerFunc {
                 filename = fmt.Sprintf("%x", sha256.Sum256(data))[:8]
             }
             if _, err := os.Stat(saveDir); err != nil {
-                logger.Println("UploadFile/os.Stat:", err)
+                debugger.Println("UploadFile/os.Stat:", err)
                 InternalServerError(w, r)
                 return
             }
             if err := os.WriteFile(path.Join(saveDir, filename), data, os.FileMode(0644)); err != nil {
-                logger.Println("UploadFile/os.WriteFile:", err)
+                debugger.Println("UploadFile/os.WriteFile:", err)
                 InternalServerError(w, r)
                 return
             }
 
-            fmt.Fprintln(w, "upload ok")
+            if _, err := fmt.Fprintln(w, "upload ok"); err != nil {
+                debugger.Println("UploadFile/fmt.Fprintln:", err)
+                return
+            }
         case http.MethodGet:
             handleGet(w, r)
         default:

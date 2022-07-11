@@ -1,12 +1,12 @@
 package handlers
 
 import (
-	"fmt"
-	"log"
-	"net/http"
-	"os"
-	"path"
-	"text/template"
+    "fmt"
+    "log"
+    "net/http"
+    "os"
+    "path"
+    "text/template"
 )
 
 const baseHTML = `
@@ -20,7 +20,8 @@ const baseHTML = `
   </body>
 </html>
 `
-var logger = log.New(os.Stderr, "[neko03.www/server/handlers]", log.Ldate|log.Ltime|log.LUTC|log.Lshortfile)
+
+var debugger = log.New(os.Stderr, "[neko03.www/server/handlers] ", log.Ldate|log.Ltime|log.LUTC|log.Lshortfile)
 
 func RegisterHandler(mux *http.ServeMux, pattern string, handlerFunc http.HandlerFunc) {
     mux.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
@@ -43,24 +44,24 @@ func RegisterFavicon(mux *http.ServeMux, filepath string) {
     })
 }
 
-func InternalServerError(w http.ResponseWriter, r *http.Request) {
+func InternalServerError(w http.ResponseWriter, _ *http.Request) {
     http.Error(w, "500 internal server error", http.StatusInternalServerError)
 }
 
 func JSPage(name string, data any) http.HandlerFunc {
     script, err := os.ReadFile(path.Join("view", name+".js"))
     if err != nil {
-        logger.Println("JSPage/os.ReadFile:", err)
+        debugger.Println("JSPage/os.ReadFile:", err)
         return http.NotFoundHandler().(http.HandlerFunc)
     }
     view, err := template.New(name).Parse(fmt.Sprintf(baseHTML, script))
     if err != nil {
-        logger.Println("JSPage/templage.Parse:", err)
+        debugger.Println("JSPage/template.Parse:", err)
         return http.NotFoundHandler().(http.HandlerFunc)
     }
     return func(w http.ResponseWriter, r *http.Request) {
         if err := view.Execute(w, data); err != nil {
-            logger.Println("JSPage/view.Execute:", err)
+            debugger.Println("JSPage/view.Execute:", err)
             InternalServerError(w, r)
             return
         }
