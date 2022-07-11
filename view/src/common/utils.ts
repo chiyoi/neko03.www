@@ -1,4 +1,4 @@
-type ChangableStyle = Omit<CSSStyleDeclaration, "parentRule" | "length" | "getPropertyPriority" | "getPropertyValue" | "item" | "removeProperty" | "setProperty" | number | typeof Symbol.iterator>;
+type ChangeableStyle = Omit<CSSStyleDeclaration, "parentRule" | "length" | "getPropertyPriority" | "getPropertyValue" | "item" | "removeProperty" | "setProperty" | number | typeof Symbol.iterator>;
 
 class ElementNotExistError extends Error {
     constructor(tagName: keyof HTMLElementTagNameMap, id: string) {
@@ -67,7 +67,7 @@ class DefineUtils {
         return new HeadEditor()
     }
 }
-var utils = new DefineUtils()
+const utils = new DefineUtils()
 
 class ElementEditor<E extends HTMLElement> {
     private elem: E
@@ -84,8 +84,8 @@ class ElementEditor<E extends HTMLElement> {
         }
         return this
     }
-    setStyles(styles: Partial<ChangableStyle>) {
-        let key: keyof ChangableStyle
+    setStyles(styles: Partial<ChangeableStyle>) {
+        let key: keyof ChangeableStyle
         for (key in styles) {
             this.elem.style[key] = styles[key]!
         }

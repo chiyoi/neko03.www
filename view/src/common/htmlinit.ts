@@ -1,4 +1,4 @@
-var app: HTMLDivElement
+let app: HTMLDivElement;
 
 function htmlinit() {
     try {
