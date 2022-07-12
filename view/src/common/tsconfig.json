@@ -1,8 +1,9 @@
 {
-    "compilerOptions": {
-        "target": "es2017",
-        "removeComments": true,
-        "strict": true
-    },
-    "include": ["*.ts"]
+  "compilerOptions": {
+    "strict": true,
+    "target": "es2016",
+    "module": "commonjs",
+    "composite": true,
+    "moduleResolution": "node"
+  }
 }

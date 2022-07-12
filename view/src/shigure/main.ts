@@ -1,30 +1,30 @@
+import {app, htmlInit, utils} from "../common/utils";
+
 window.oncontextmenu = function(e) {e.preventDefault()}
 window.onload = function() {
-    htmlinit()
+    htmlInit()
     utils.editHead()
         .title("shigure")
     frameRate = 60
     moveSpeed = 50
-    let font = new FontFace("lolikoapp", ttfurl)
-    font.load().then(rander).catch(function(error) {
-        nofont()
-    })
+    let font = new FontFace("lolikoneko", ttfURL)
+    font.load().then(render).catch((_) => {noFont()})
 }
 
-var frameRate: number
-var moveSpeed: number
+let frameRate: number
+let moveSpeed: number
 
-var content = "時雨さま大大大大好き！"
-var ttfurl = "url(/assets/shigure/lolikoneko.ttf"
+let content = "時雨さま大大大大好き！"
+let ttfURL = "url(./assets/lolikoneko.ttf"
 
-function rander(loadedFont: FontFace) {
+function render(loadedFont: FontFace) {
     document.fonts.add(loadedFont)
     let text = utils.append(app, "text")
     text.innerText = content
     utils.edit(text)
         .scale("1600px", "100px")
         .setStyles({
-            "fontFamily": "lolikoapp",
+            "fontFamily": "lolikoneko",
             "fontSize": "100px",
             "textAlign": "center",
         })
@@ -33,7 +33,7 @@ function rander(loadedFont: FontFace) {
     window.setInterval(update, 1000/frameRate)
 }
 
-function nofont() {
+function noFont() {
     let text = utils.append(app, "text")
     text.innerText = content
     utils.edit(text)

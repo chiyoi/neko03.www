@@ -1,8 +1,13 @@
 {
-    "compilerOptions": {
-        "target": "es2017",
-        "removeComments": true,
-        "strict": true
-    },
-    "include": ["*.ts", "../common/*.ts"]
+  "compilerOptions": {
+    "strict": true,
+    "target": "es2016",
+    "module": "commonjs",
+    "moduleResolution": "node"
+  },
+  "references": [
+    {
+      "path": "../common"
+    }
+  ]
 }
