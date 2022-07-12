@@ -14,7 +14,7 @@ COPY ./view/package.json ./view/package-lock.json ./
 RUN npm install
 
 COPY ./view ./
-RUN npx webpack -o ./dist
+RUN npm run build -- -o ./dist
 
 FROM alpine
 

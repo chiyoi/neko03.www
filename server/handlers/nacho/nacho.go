@@ -6,7 +6,7 @@ import (
     _ "image/jpeg"
     _ "image/png"
     "log"
-    "neko03.com.www/handlers"
+    "neko03.www.server/handlers"
     "net/http"
     "os"
     "path"

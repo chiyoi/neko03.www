@@ -3,9 +3,9 @@ package main
 import (
     "context"
     "log"
-    "neko03.com.www/handlers"
-    "neko03.com.www/handlers/nacho"
-    "neko03.com.www/server"
+    "neko03.www.server/handlers"
+    "neko03.www.server/handlers/nacho"
+    "neko03.www.server/server"
     "net/http"
     "os"
     "os/signal"

@@ -1,7 +1,10 @@
 {
-  "name": "neko03.www.view",
+  "name": "neko03.view",
   "version": "1.0.0",
   "license": "ISC",
+  "scripts": {
+    "build": "webpack"
+  },
   "devDependencies": {
     "@types/node-fetch": "^2.6.2",
     "ts-loader": "^9.3.1",
