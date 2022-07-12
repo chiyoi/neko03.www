@@ -10,7 +10,8 @@ class NoParentNodeError extends Error {
         super(elem.nodeName)
     }
 }
-class DefineUtils {
+
+class Utils {
     append<K extends keyof HTMLElementTagNameMap>(parentNode: HTMLElement, id: string, tagName: K): HTMLElementTagNameMap[K]
     append(patentNode: HTMLElement, id: string): HTMLDivElement
     append<K extends keyof HTMLElementTagNameMap>(parentNode: HTMLElement, id: string, tagName?: K): HTMLElementTagNameMap[K] | HTMLDivElement {
@@ -67,7 +68,7 @@ class DefineUtils {
         return new HeadEditor()
     }
 }
-const utils = new DefineUtils()
+export const utils = new Utils()
 
 class ElementEditor<E extends HTMLElement> {
     private elem: E
@@ -150,7 +151,11 @@ class ElementEditor<E extends HTMLElement> {
 class HeadEditor {
     private head: HTMLHeadElement
     constructor() {
-        this.head = utils.getElement("head", "head")
+        let nodes = document.getElementsByTagName("head")
+        if (nodes.length !== 1) {
+            throw new Error("error number of basic element")
+        }
+        this.head = nodes[0]
     }
     title(name: string) {
         utils.append(this.head, "title", "title").innerHTML = name
@@ -163,4 +168,27 @@ class HeadEditor {
             .setAttr("href", path)
         return this
     }
+}
+
+export let app: HTMLDivElement;
+
+export function htmlInit() {
+    try {
+        utils.remove(utils.getElement("noscript"))
+    } catch(ElementNotExistError) {
+        console.log("cannot find: div#noscript")
+    }
+
+    let body = document.getElementsByTagName("body")[0]
+    utils.edit(body)
+        .setStyles({
+            height: "100vh",
+            margin: "0",
+            overflow: "hidden",
+        })
+    app = utils.append(body, "app")
+    utils.edit(app)
+        .setStyles({
+            height: "100%",
+        })
 }

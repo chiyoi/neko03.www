@@ -1,6 +1,8 @@
-var notice: HTMLDivElement
+import {app, htmlInit, utils} from "../common/utils";
+
+let notice: HTMLDivElement
 window.onload = function() {
-    htmlinit()
+    htmlInit()
     utils.editHead()
         .title("upload")
     notice = utils.append(app, "notice")
@@ -27,9 +29,9 @@ window.onload = function() {
         file = curr.files[0]
         notice.innerText = "ready to upload "+file.name
     }
-    let selectfile = utils.append(app, "selectfile")
-    selectfile.innerText = "select file"
-    utils.edit(selectfile)
+    let selectFile = utils.append(app, "selectFile")
+    selectFile.innerText = "select file"
+    utils.edit(selectFile)
         .scale("60px", "30px")
         .centralize()
         .translate("-200%", "200%")
@@ -45,12 +47,12 @@ window.onload = function() {
             borderRadius: "0px 50px 50px 50px",
             cursor: "pointer",
         })
-    selectfile.onclick = function(ev: MouseEvent) {
+    selectFile.onclick = function(_: MouseEvent) {
         input.click()
     }
-    let uploadfile = utils.append(app, "uploadfile")
-    uploadfile.innerText = "upload file"
-    utils.edit(uploadfile)
+    let uploadFile = utils.append(app, "uploadFile")
+    uploadFile.innerText = "upload file"
+    utils.edit(uploadFile)
         .scale("60px", "30px")
         .centralize()
         .translate("200%", "200%")
@@ -66,16 +68,16 @@ window.onload = function() {
             borderRadius: "0px 50px 50px 50px",
             cursor: "pointer",
         })
-    uploadfile.onclick = function(ev: MouseEvent) {
+    uploadFile.onclick = function(_: MouseEvent) {
         if (typeof file === "undefined") {
             return
         }
         postRequest(file)
         file = undefined
     }
-    let browsefile = utils.append(app, "browsefile")
-    browsefile.innerText = "browse file"
-    utils.edit(browsefile)
+    let browseFile = utils.append(app, "browseFile")
+    browseFile.innerText = "browse file"
+    utils.edit(browseFile)
         .scale("60px", "30px")
         .centralize()
         .translate("0", "200%")
@@ -91,7 +93,7 @@ window.onload = function() {
             borderRadius: "0px 50px 50px 50px",
             cursor: "pointer",
         })
-    browsefile.onclick = function(ev: MouseEvent) {
+    browseFile.onclick = function(_: MouseEvent) {
         location.href = "/disk"
     }
 
@@ -121,18 +123,18 @@ window.onload = function() {
         notice.innerText = "ready to upload "+file.name
     }
 }
-var interval: number
+let interval: number
 function postRequest(file: File) {
-    let loadanime = "..."
+    let loadAnime = "..."
     file.arrayBuffer().then(data => {
         interval = window.setInterval(function() {
-            notice.innerText = `uploading${loadanime}`
-            if (loadanime === "...") {
-                loadanime = "."
-            } else if (loadanime === ".") {
-                loadanime = ".."
-            } else if (loadanime === "..") {
-                loadanime = "..."
+            notice.innerText = `uploading${loadAnime}`
+            if (loadAnime === "...") {
+                loadAnime = "."
+            } else if (loadAnime === ".") {
+                loadAnime = ".."
+            } else if (loadAnime === "..") {
+                loadAnime = "..."
             }
         }, 500)
         fetch("/upload", {

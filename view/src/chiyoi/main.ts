@@ -1,9 +1,10 @@
+import {app, htmlInit, utils} from "../common/utils";
+
 window.oncontextmenu = function(e) {e.preventDefault()}
 window.onload = function() {
-    htmlinit()
+    htmlInit()
     utils.editHead()
-        .title("chiyoi")
-        .favicon("/assets/chiyoi/icon.png")
+        .favicon("./icon.png")
     let icon_frame = utils.append(app, "icon_frame")
     utils.edit(icon_frame)
         .scale("150px", "200px")
@@ -12,7 +13,7 @@ window.onload = function() {
     let icon = utils.append(icon_frame, "icon", "img")
     utils.edit(icon)
         .scale("150px", "150px")
-        .setAttr("src", "/assets/chiyoi/icon.png")
+        .setAttr("src", "./assets/icon.png")
         .setStyles({
             clipPath: "circle(50%)",
         })
@@ -31,7 +32,7 @@ window.onload = function() {
         .translate("1.5%", "30%")
         .disablePointer()
 
-    let twi_button = utils.append(app, "twi_button")
+    let twi_button = utils.append(app, "twi_button", "img")
     utils.edit(twi_button)
         .scale("30px", "30px")
         .centralize()
@@ -39,7 +40,7 @@ window.onload = function() {
         .setStyles({
             cursor: "pointer",
         })
-    twi_button.innerHTML = `{{.Twi_button_img}}`
+        .setAttr("src", "./assets/twi_button_img.svg")
     twi_button.onclick = function() {
         location.href = "/chiyoi/twitter"
     }

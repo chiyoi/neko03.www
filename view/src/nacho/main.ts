@@ -1,6 +1,8 @@
+import {app, htmlInit, utils} from "../common/utils";
+
 window.oncontextmenu = function(e) {e.preventDefault()}
 window.onload = function() {
-    htmlinit()
+    htmlInit()
     init()
     window.setInterval(mainloop, 1000/frameRate)
 }
@@ -10,16 +12,16 @@ type Image_T = {
     width: number,
     height: number,
 }
-var images: Image_T[]
-var ymin: number
-var ymax: number
-var hmin: number
-var interval: number
-var moveSpeed: number
-var laidImgs: Map<number, HTMLImageElement>
-var rightid: number
-var leftid: number
-var frameRate: number
+let images: Image_T[]
+let ymin: number
+let ymax: number
+let hmin: number
+let interval: number
+let moveSpeed: number
+let laidImgs: Map<number, HTMLImageElement>
+let rightId: number
+let leftId: number
+let frameRate: number
 
 function init() {
     utils.editHead()
@@ -30,21 +32,30 @@ function init() {
     interval = Math.floor(0.1 * app.clientWidth)
     frameRate = 24
     moveSpeed = 2
-    images = JSON.parse('{{.Images}}')
-    laidImgs = new Map<number, HTMLImageElement>()
-    rightid = 0
-    newRight()
-    leftid = rightid
+    fetch("./img_info.json").then(response => {
+        if (!response.ok) {
+            throw new Error(`error fetching ${response.url}: ${response.statusText}`)
+        }
+        return response.json()
+    }).then(data => {
+        images = data as Image_T[]
+        laidImgs = new Map<number, HTMLImageElement>()
+        rightId = 0
+        newRight()
+        leftId = rightId
+    }).catch(err => {
+        throw err
+    })
 }
 
 function mainloop() {
-    let leftimg = laidImgs.get(leftid)
-    let rightimg = laidImgs.get(rightid)
-    if (!leftimg || !rightimg) {throw new Error("internel error")}
-    if (app.clientWidth - (rightimg.x + rightimg.width) >= interval) {
+    let leftImg = laidImgs.get(leftId)
+    let rightImg = laidImgs.get(rightId)
+    if (!leftImg || !rightImg) {throw new Error("internal error")}
+    if (app.clientWidth - (rightImg.x + rightImg.width) >= interval) {
         newRight()
     }
-    if (leftimg.x + leftimg.width < 0) {
+    if (leftImg.x + leftImg.width < 0) {
         removeLeft()
     }
     laidImgs.forEach(moveImg)
@@ -65,19 +76,19 @@ function newRight() {
     let h = Math.random() * (hmax - hmin) + hmin
     let w = img.width / img.height * h
 
-    rightid += 1
-    let imgNode = utils.append(app, `img${rightid}`, "img")
+    rightId += 1
+    let imgNode = utils.append(app, `img${rightId}`, "img")
     utils.edit(imgNode)
         .setAttr("src", img.path)
         .scale(w.toString()+"px", h.toString()+"px")
         .position(x.toString()+"px", y.toString()+"px")
-    laidImgs.set(rightid, imgNode)
+    laidImgs.set(rightId, imgNode)
 }
 function removeLeft() {
-    if (!laidImgs.has(leftid)) {
-        throw new Error(`cannot remove image: ${leftid}`)
+    if (!laidImgs.has(leftId)) {
+        throw new Error(`cannot remove image: ${leftId}`)
     }
-    utils.remove(laidImgs.get(leftid)!)
-    laidImgs.delete(leftid)
-    leftid += 1
+    utils.remove(laidImgs.get(leftId)!)
+    laidImgs.delete(leftId)
+    leftId += 1
 }

@@ -1,37 +1,103 @@
 package main
 
 import (
-    "neko03.com/www/handlers"
-    "neko03.com/www/server"
+    "context"
+    "log"
+    "neko03.com.www/handlers"
+    "neko03.com.www/handlers/nacho"
+    "neko03.com.www/server"
     "net/http"
+    "os"
+    "os/signal"
+    "time"
 )
 
-func main() {
-    hosts := []string{"www.neko03.com"}
+var isDevelop bool
 
-    var mux = http.NewServeMux()
+var logger = log.New(os.Stdout, "[neko03] ", log.LstdFlags|log.LUTC)
+var debugger = log.New(os.Stderr, "[neko03] ", log.LstdFlags|log.LUTC|log.Lshortfile)
 
-    handlers.RegisterFileServer(mux, "/disk/", "./disk")
-    handlers.RegisterFileServer(mux, "/git/", "./git")
-    handlers.RegisterFileServer(mux, "/assets/", "./assets")
+var hosts []string
+var mux *http.ServeMux
+var httpServer, httpsServer *http.Server
 
-    handlers.RegisterFavicon(mux, "./assets/chiyoi/icon.png")
+func init() {
+    isDevelop = os.Getenv("TERM_PROGRAM") == "Apple_Terminal" ||
+        os.Getenv("TERMINAL_EMULATOR") == "JetBrains-JediTerm"
 
-    handlers.RegisterHandler(mux, "/", func(w http.ResponseWriter, r *http.Request) {
+    hosts = []string{"www.neko03.com"}
+
+    mux = http.NewServeMux()
+    registerHandlers()
+
+    var certManager = server.NewCertManager(hosts)
+    httpServer, httpsServer = server.NewServers(mux, certManager)
+}
+func registerHandlers() {
+    mux.HandleFunc(handlers.FileServer("/disk", "./disk"))
+
+    mux.HandleFunc(handlers.PathAssert("/", func(w http.ResponseWriter, r *http.Request) {
         http.Redirect(w, r, "/chiyoi", http.StatusPermanentRedirect)
-    })
-    handlers.RegisterHandler(mux, "/chiyoi/twitter", func(w http.ResponseWriter, r *http.Request) {
+    }))
+    mux.HandleFunc(handlers.Favicon("./assets/chiyoi/icon.png"))
+    mux.HandleFunc(handlers.PathAssert("/chiyoi/twitter", func(w http.ResponseWriter, r *http.Request) {
         http.Redirect(w, r, "https://twitter.com/chiyoi2140", http.StatusPermanentRedirect)
-    })
+    }))
 
-    handlers.RegisterHandler(mux, "/chiyoi", handlers.Chiyoi())
-    handlers.RegisterHandler(mux, "/jigokutsuushin", handlers.JSPage("jigokutsuushin", nil))
-    handlers.RegisterHandler(mux, "/shigure", handlers.JSPage("shigure", nil))
-    handlers.RegisterHandler(mux, "/nacho", handlers.Nacho())
-    handlers.RegisterHandler(mux, "/upload", handlers.UploadFile("./disk"))
+    mux.HandleFunc(handlers.JSPageWithAssets("chiyoi"))
+    mux.HandleFunc(nacho.Nacho())
+    mux.HandleFunc(handlers.JSPageWithAssets("jigokutsuushin"))
+    mux.HandleFunc(handlers.JSPageWithAssets("shigure"))
+    mux.HandleFunc(handlers.UploadFile("upload", "./disk"))
+}
 
-    var ser = server.NewServers(mux)
-    ser.RegisterHostWhiteList(hosts...)
+func main() {
+    if isDevelop {
+        go dev()
+    } else {
+        go prod()
+    }
 
-    server.Start(ser)
+    var sig = make(chan os.Signal)
+    signal.Notify(sig, os.Interrupt)
+
+    interrupt := <-sig
+    logger.Println(interrupt)
+
+    if isDevelop {
+        stop(httpServer)
+    } else {
+        stop(httpsServer)
+        stop(httpServer)
+    }
+}
+
+func dev() {
+    httpServer.Addr = ":8088"
+    logger.Println("serving :8088")
+    if err := httpServer.ListenAndServe(); err != http.ErrServerClosed {
+        debugger.Println("dev/httpServer.ListenAndServe:", err)
+    }
+}
+
+func prod() {
+    go func() {
+        logger.Println("serving http.")
+        if err := httpServer.ListenAndServe(); err != http.ErrServerClosed {
+            debugger.Println("prod/httpServer.ListenAndServe:", err)
+        }
+    }()
+
+    logger.Println("serving https.")
+    if err := httpsServer.ListenAndServeTLS("", ""); err != http.ErrServerClosed {
+        debugger.Println("prod/httpsServer.ListenAndServeTLS:", err)
+    }
+}
+
+func stop(ser *http.Server) {
+    var timer, cancel = context.WithTimeout(context.Background(), time.Second*5)
+    defer cancel()
+    if err := ser.Shutdown(timer); err != nil {
+        debugger.Println("stop/ser.Shutdown:", err)
+    }
 }
