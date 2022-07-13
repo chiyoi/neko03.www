@@ -12,8 +12,6 @@ import (
     "time"
 )
 
-var isDevelop bool
-
 var logger = log.New(os.Stdout, "[neko03] ", log.LstdFlags|log.LUTC)
 var debugger = log.New(os.Stderr, "[neko03] ", log.LstdFlags|log.LUTC|log.Lshortfile)
 
@@ -22,9 +20,6 @@ var mux *http.ServeMux
 var httpServer, httpsServer *http.Server
 
 func init() {
-    isDevelop = os.Getenv("TERM_PROGRAM") == "Apple_Terminal" ||
-        os.Getenv("TERMINAL_EMULATOR") == "JetBrains-JediTerm"
-
     hosts = []string{"www.neko03.com"}
 
     mux = http.NewServeMux()
@@ -52,19 +47,20 @@ func registerHandlers() {
 }
 
 func main() {
-    if isDevelop {
+    if os.Getenv("ENVIRONMENT") == "dev" {
         go dev()
     } else {
         go prod()
     }
 
     var sig = make(chan os.Signal)
+
     signal.Notify(sig, os.Interrupt)
 
     interrupt := <-sig
     logger.Println(interrupt)
 
-    if isDevelop {
+    if os.Getenv("ENVIRONMENT") == "dev" {
         stop(httpServer)
     } else {
         stop(httpsServer)

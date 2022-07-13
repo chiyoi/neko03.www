@@ -18,6 +18,8 @@ RUN npm run build -- -o ./dist
 
 FROM alpine
 
+ENV ENVIRONMENT=prod
+
 WORKDIR /neko
 COPY ./assets/assets ./assets
 COPY --from=0 /build/target/www ./neko03
