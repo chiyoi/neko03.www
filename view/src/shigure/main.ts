@@ -10,9 +10,7 @@ window.onload = function() {
     frameRate = 60
     moveSpeed = 50
     let font = new FontFace("lolikoneko", ttfURL)
-    font.load().then(render).catch((_) => {
-        noFont()
-    })
+    font.load().then(render).catch(() => noFont())
 }
 
 let frameRate: number
