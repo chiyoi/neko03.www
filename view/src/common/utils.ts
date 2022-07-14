@@ -2,9 +2,10 @@ type ChangeableStyle = Omit<CSSStyleDeclaration, "parentRule" | "length" | "getP
 
 class ElementNotExistError extends Error {
     constructor(tagName: keyof HTMLElementTagNameMap, id: string) {
-        super("element not exist: "+tagName+"#"+id)
+        super("element not exist: " + tagName + "#" + id)
     }
 }
+
 class NoParentNodeError extends Error {
     constructor(elem: HTMLElement) {
         super(elem.nodeName)
@@ -64,27 +65,33 @@ class Utils {
     edit<E extends HTMLElement>(elem: E) {
         return new ElementEditor(elem)
     }
+
     editHead() {
         return new HeadEditor()
     }
 }
+
 export const utils = new Utils()
 
 class ElementEditor<E extends HTMLElement> {
     private elem: E
+
     constructor(elem: E) {
         this.elem = elem
     }
+
     setAttr(attr: string, value: string) {
         this.elem.setAttribute(attr, value)
         return this
     }
+
     setAttrs(attrs: {[index: string]: string}) {
         for (let attr in attrs) {
             this.setAttr(attr, attrs[attr])
         }
         return this
     }
+
     setStyles(styles: Partial<ChangeableStyle>) {
         let key: keyof ChangeableStyle
         for (key in styles) {
@@ -92,6 +99,7 @@ class ElementEditor<E extends HTMLElement> {
         }
         return this
     }
+
     scale(width: string, height: string) {
         this.setStyles({
             width: width,
@@ -99,6 +107,7 @@ class ElementEditor<E extends HTMLElement> {
         })
         return this
     }
+
     anchor(pos: "middle" | "top" | "left" | "right" | "bottom") {
         switch (pos) {
             case "middle":
@@ -119,6 +128,7 @@ class ElementEditor<E extends HTMLElement> {
         }
         return this
     }
+
     position(x: string, y: string) {
         this.setStyles({
             position: "absolute",
@@ -127,18 +137,21 @@ class ElementEditor<E extends HTMLElement> {
         })
         return this
     }
+
     translate(x: string, y: string) {
         let original = this.elem.style.transform
         this.setStyles({
-            transform: original+`translate(${x},${y})`,
+            transform: original + `translate(${x},${y})`,
         })
         return this
     }
+
     centralize() {
         this.anchor("middle")
             .position("50%", "50%")
         return this
     }
+
     disablePointer() {
         this.setStyles({
             cursor: "none",
@@ -150,6 +163,7 @@ class ElementEditor<E extends HTMLElement> {
 
 class HeadEditor {
     private head: HTMLHeadElement
+
     constructor() {
         let nodes = document.getElementsByTagName("head")
         if (nodes.length !== 1) {
@@ -157,10 +171,12 @@ class HeadEditor {
         }
         this.head = nodes[0]
     }
+
     title(name: string) {
         utils.append(this.head, "title", "title").innerHTML = name
         return this
     }
+
     favicon(path: string) {
         utils.edit(utils.append(this.head, "favicon", "link"))
             .setAttr("rel", "shortcut icon")
@@ -175,7 +191,7 @@ export let app: HTMLDivElement;
 export function htmlInit() {
     try {
         utils.remove(utils.getElement("noscript"))
-    } catch(ElementNotExistError) {
+    } catch (ElementNotExistError) {
         console.log("cannot find: div#noscript")
     }
 

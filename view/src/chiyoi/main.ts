@@ -1,6 +1,8 @@
 import {app, htmlInit, utils} from "../common/utils";
 
-window.oncontextmenu = function(e) {e.preventDefault()}
+window.oncontextmenu = function(e) {
+    e.preventDefault()
+}
 window.onload = function() {
     htmlInit()
     utils.editHead()

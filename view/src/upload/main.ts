@@ -27,7 +27,7 @@ window.onload = function() {
             throw new Error("no file")
         }
         file = curr.files[0]
-        notice.innerText = "ready to upload "+file.name
+        notice.innerText = "ready to upload " + file.name
     }
     let selectFile = utils.append(app, "selectFile")
     selectFile.innerText = "select file"
@@ -120,10 +120,11 @@ window.onload = function() {
             throw new Error("no data transfer")
         }
         file = ev.dataTransfer.files[0]
-        notice.innerText = "ready to upload "+file.name
+        notice.innerText = "ready to upload " + file.name
     }
 }
 let interval: number
+
 function postRequest(file: File) {
     let loadAnime = "..."
     file.arrayBuffer().then(data => {
@@ -154,6 +155,6 @@ function uploaded(res: Response) {
     if (res.ok) {
         notice.innerText = "file uploaded."
     } else {
-        notice.innerText = "error: ["+res.status+"] "+res.statusText
+        notice.innerText = "error: [" + res.status + "] " + res.statusText
     }
 }

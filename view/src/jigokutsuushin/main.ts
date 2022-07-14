@@ -1,6 +1,8 @@
 import {app, htmlInit, utils} from "../common/utils";
 
-window.oncontextmenu = function(e) {e.preventDefault()}
+window.oncontextmenu = function(e) {
+    e.preventDefault()
+}
 window.onload = function() {
     htmlInit()
     utils.editHead()
@@ -32,16 +34,19 @@ function playOpening() {
             "src": "./assets/audio.mp3",
             "type": "audio/mpeg",
         })
-        
+
     video.onended = session1
-    audio.onended = () => {utils.remove(audio)}
+    audio.onended = () => {
+        utils.remove(audio)
+    }
     video.oncanplay = () => {
-        video.play().then(_ => {})
-        audio.play().then(_ => {})
+        video.play().then()
+        audio.play().then()
     }
 }
 
 let formFrame: HTMLDivElement
+
 function session1() {
     utils.remove(utils.getElement("video", "video"))
     formFrame = utils.append(app, "formFrame")
@@ -122,6 +127,7 @@ function session2() {
         }
     }, 1)
 }
+
 function session2_1() {
     let origin = app.style.cursor
     utils.edit(app)
@@ -136,7 +142,9 @@ function session2_1() {
         popup()
     }, 2000)
 }
+
 let timeout: number
+
 function popup() {
     let popupFrame = utils.append(app, "popupFrame")
     utils.edit(popupFrame)
@@ -144,7 +152,7 @@ function popup() {
         .setStyles({
             background: "#d6d6d6",
             border: "groove 2px",
-            borderRadius:"3px",
+            borderRadius: "3px",
         })
         .centralize()
     let popupProp = utils.append(popupFrame, "popupProp", "p")

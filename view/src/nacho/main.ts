@@ -1,10 +1,12 @@
 import {app, htmlInit, utils} from "../common/utils";
 
-window.oncontextmenu = function(e) {e.preventDefault()}
+window.oncontextmenu = function(e) {
+    e.preventDefault()
+}
 window.onload = function() {
     htmlInit()
     init()
-    window.setInterval(mainloop, 1000/frameRate)
+    window.setInterval(mainloop, 1000 / frameRate)
 }
 
 type Image_T = {
@@ -51,7 +53,9 @@ function init() {
 function mainloop() {
     let leftImg = laidImgs.get(leftId)
     let rightImg = laidImgs.get(rightId)
-    if (!leftImg || !rightImg) {throw new Error("internal error")}
+    if (!leftImg || !rightImg) {
+        throw new Error("internal error")
+    }
     if (app.clientWidth - (rightImg.x + rightImg.width) >= interval) {
         newRight()
     }
@@ -64,7 +68,7 @@ function mainloop() {
 function moveImg(img: HTMLImageElement) {
     let newx = img.x - moveSpeed
     utils.edit(img)
-        .position(newx.toString()+"px", img.style["top"])
+        .position(newx.toString() + "px", img.style["top"])
 }
 
 function newRight() {
@@ -80,10 +84,11 @@ function newRight() {
     let imgNode = utils.append(app, `img${rightId}`, "img")
     utils.edit(imgNode)
         .setAttr("src", img.path)
-        .scale(w.toString()+"px", h.toString()+"px")
-        .position(x.toString()+"px", y.toString()+"px")
+        .scale(w.toString() + "px", h.toString() + "px")
+        .position(x.toString() + "px", y.toString() + "px")
     laidImgs.set(rightId, imgNode)
 }
+
 function removeLeft() {
     if (!laidImgs.has(leftId)) {
         throw new Error(`cannot remove image: ${leftId}`)

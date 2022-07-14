@@ -1,6 +1,8 @@
 import {app, htmlInit, utils} from "../common/utils";
 
-window.oncontextmenu = function(e) {e.preventDefault()}
+window.oncontextmenu = function(e) {
+    e.preventDefault()
+}
 window.onload = function() {
     htmlInit()
     utils.editHead()
@@ -8,7 +10,9 @@ window.onload = function() {
     frameRate = 60
     moveSpeed = 50
     let font = new FontFace("lolikoneko", ttfURL)
-    font.load().then(render).catch((_) => {noFont()})
+    font.load().then(render).catch((_) => {
+        noFont()
+    })
 }
 
 let frameRate: number
@@ -29,8 +33,8 @@ function render(loadedFont: FontFace) {
             "textAlign": "center",
         })
         .translate("0", "-50%")
-        .position((app.clientWidth + 100).toString()+"px", "50%")
-    window.setInterval(update, 1000/frameRate)
+        .position((app.clientWidth + 100).toString() + "px", "50%")
+    window.setInterval(update, 1000 / frameRate)
 }
 
 function noFont() {
@@ -43,15 +47,15 @@ function noFont() {
             "textAlign": "center",
         })
         .translate("0", "-50%")
-        .position((app.clientWidth + 100).toString()+"px", "50%")
-    window.setInterval(update, 1000/frameRate)
+        .position((app.clientWidth + 100).toString() + "px", "50%")
+    window.setInterval(update, 1000 / frameRate)
 }
 
 function update() {
     let text: HTMLDivElement
     try {
         text = utils.getElement("text")
-    } catch(error) {
+    } catch (error) {
         return
     }
     let left = parseInt(text.style.left), width = parseInt(text.style.width)
@@ -64,5 +68,5 @@ function update() {
     }
     let newx = left - moveSpeed
     utils.edit(text)
-        .position(newx.toString()+"px", "50%")
+        .position(newx.toString() + "px", "50%")
 }
