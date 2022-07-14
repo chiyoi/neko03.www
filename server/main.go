@@ -13,23 +13,22 @@ import (
     "neko03/utils"
 )
 
-var logger = utils.NewLogger(os.Stdout, "[neko03] ")
-var debugger = utils.NewLogger(os.Stderr, "[neko03] ")
+var (
+    logger   = utils.NewLogger(os.Stdout, "[neko03] ")
+    debugger = utils.NewLogger(os.Stderr, "[neko03] ")
+)
 
-var hosts []string
-var mux *http.ServeMux
-var httpServer, httpsServer *http.Server
+var (
+    hosts                   []string
+    httpServer, httpsServer *http.Server
+    mux                     *http.ServeMux
+)
 
 func init() {
     hosts = []string{"www.neko03.com"}
 
     mux = http.NewServeMux()
-    registerHandlers()
 
-    var certManager = server.NewCertManager(hosts)
-    httpServer, httpsServer = server.NewServers(mux, certManager)
-}
-func registerHandlers() {
     mux.HandleFunc(handlers.FileServer("/disk", "./disk"))
 
     mux.HandleFunc(handlers.PathAssert("/", func(w http.ResponseWriter, r *http.Request) {
@@ -45,6 +44,9 @@ func registerHandlers() {
     mux.HandleFunc(handlers.JSPageWithAssets("jigokutsuushin"))
     mux.HandleFunc(handlers.JSPageWithAssets("shigure"))
     mux.HandleFunc(handlers.UploadFile("upload", "./disk"))
+
+    var certManager = server.NewCertManager(hosts)
+    httpServer, httpsServer = server.NewServers(mux, certManager)
 }
 
 func main() {
