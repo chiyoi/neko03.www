@@ -38,18 +38,18 @@ func JSPage(name string) (pattern string, handler http.HandlerFunc) {
     return "/" + name + "/", func(w http.ResponseWriter, r *http.Request) {
         paths, err := pathSplit(r.URL.Path)
         if err != nil {
-            debugger.Println("JSPage/pathSplit:", err)
+            debugger.Println("pathSplit:", err)
         }
         switch paths[0] {
         case "":
             if _, err := w.Write([]byte(view)); err != nil {
-                debugger.Println("JSPage.func1/fmt.Fprint:", err)
+                debugger.Println("fmt.Fprint:", err)
             }
         case "main.js":
             http.ServeFile(w, r, path.Join("view", name+".js"))
         default:
             http.NotFound(w, r)
-            debugger.Println("JSPageWithAssets/path:", "unexpected path:", paths[0])
+            debugger.Println("unexpected path:", paths[0])
         }
     }
 }
@@ -60,7 +60,7 @@ func JSPageWithAssets(name string) (pattern string, handler http.HandlerFunc) {
         paths, err := pathSplit(r.URL.Path)
         if err != nil {
             InternalServerError(w, r)
-            debugger.Println("JSPageWithAssets/pathSplit:", err)
+            debugger.Println("pathSplit:", err)
         }
         switch paths[0] {
         case "assets":
@@ -80,7 +80,7 @@ func UploadFile(name string, saveDir string) (pattern string, handler http.Handl
         case http.MethodPut, http.MethodPost:
             data, err := ioutil.ReadAll(r.Body)
             if err != nil {
-                debugger.Println("UploadFile/ioutil.ReadAll:", err)
+                debugger.Println("ioutil.ReadAll:", err)
                 InternalServerError(w, r)
                 return
             }
@@ -90,18 +90,18 @@ func UploadFile(name string, saveDir string) (pattern string, handler http.Handl
                 filename = fmt.Sprintf("%x", sha256.Sum256(data))[:8]
             }
             if _, err := os.Stat(saveDir); err != nil {
-                debugger.Println("UploadFile/os.Stat:", err)
+                debugger.Println("os.Stat:", err)
                 InternalServerError(w, r)
                 return
             }
             if err := os.WriteFile(path.Join(saveDir, filename), data, os.FileMode(0644)); err != nil {
-                debugger.Println("UploadFile/os.WriteFile:", err)
+                debugger.Println("os.WriteFile:", err)
                 InternalServerError(w, r)
                 return
             }
 
             if _, err := fmt.Fprintln(w, "upload ok"); err != nil {
-                debugger.Println("UploadFile/fmt.Fprintln:", err)
+                debugger.Println("fmt.Fprintln:", err)
                 return
             }
         default:

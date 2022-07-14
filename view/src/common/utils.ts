@@ -26,18 +26,6 @@ class Utils {
         parentNode.appendChild(elem)
         return elem
     }
-
-    addStyleSheet(css: string) {
-        let styleNode = utils.getElement("style", "style")
-        if (styleNode === undefined) {
-            let head = document.getElementsByTagName("head")[0]
-            styleNode = utils.append(head, "style", "style")
-            utils.edit(styleNode)
-                .setAttr("type", "text/css")
-        }
-        styleNode.innerHTML += css
-    }
-
     getElement<K extends keyof HTMLElementTagNameMap>(id: string, tagName: K): HTMLElementTagNameMap[K]
     getElement(id: string): HTMLDivElement
     getElement<K extends keyof HTMLElementTagNameMap>(id: string, tagName?: K): HTMLElementTagNameMap[K] | HTMLDivElement {

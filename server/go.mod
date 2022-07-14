@@ -1,4 +1,4 @@
-module neko03.www.server
+module neko03
 
 go 1.18
 

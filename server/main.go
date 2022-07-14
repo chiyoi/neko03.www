@@ -2,18 +2,19 @@ package main
 
 import (
     "context"
-    "log"
-    "neko03.www.server/handlers"
-    "neko03.www.server/handlers/nacho"
-    "neko03.www.server/server"
     "net/http"
     "os"
     "os/signal"
     "time"
+
+    "neko03/handlers"
+    "neko03/handlers/nacho"
+    "neko03/server"
+    "neko03/utils"
 )
 
-var logger = log.New(os.Stdout, "[neko03] ", log.LstdFlags|log.LUTC)
-var debugger = log.New(os.Stderr, "[neko03] ", log.LstdFlags|log.LUTC|log.Lshortfile)
+var logger = utils.NewLogger(os.Stdout, "[neko03] ")
+var debugger = utils.NewLogger(os.Stderr, "[neko03] ")
 
 var hosts []string
 var mux *http.ServeMux
@@ -47,23 +48,22 @@ func registerHandlers() {
 }
 
 func main() {
-    if os.Getenv("ENVIRONMENT") == "dev" {
-        go dev()
-    } else {
+    if os.Getenv("ENVIRONMENT") == "prod" {
         go prod()
+    } else {
+        go dev()
     }
 
     var sig = make(chan os.Signal)
-
     signal.Notify(sig, os.Interrupt)
 
     interrupt := <-sig
     logger.Println(interrupt)
 
-    if os.Getenv("ENVIRONMENT") == "dev" {
+    if os.Getenv("ENVIRONMENT") == "prod" {
+        stop(httpsServer)
         stop(httpServer)
     } else {
-        stop(httpsServer)
         stop(httpServer)
     }
 }
@@ -72,7 +72,7 @@ func dev() {
     httpServer.Addr = ":8088"
     logger.Println("serving :8088")
     if err := httpServer.ListenAndServe(); err != http.ErrServerClosed {
-        debugger.Println("dev/httpServer.ListenAndServe:", err)
+        debugger.Println("httpServer.ListenAndServe:", err)
     }
 }
 
@@ -80,13 +80,13 @@ func prod() {
     go func() {
         logger.Println("serving http.")
         if err := httpServer.ListenAndServe(); err != http.ErrServerClosed {
-            debugger.Println("prod/httpServer.ListenAndServe:", err)
+            debugger.Println("httpServer.ListenAndServe:", err)
         }
     }()
 
     logger.Println("serving https.")
     if err := httpsServer.ListenAndServeTLS("", ""); err != http.ErrServerClosed {
-        debugger.Println("prod/httpsServer.ListenAndServeTLS:", err)
+        debugger.Println("httpsServer.ListenAndServeTLS:", err)
     }
 }
 
@@ -94,6 +94,6 @@ func stop(ser *http.Server) {
     var timer, cancel = context.WithTimeout(context.Background(), time.Second*5)
     defer cancel()
     if err := ser.Shutdown(timer); err != nil {
-        debugger.Println("stop/ser.Shutdown:", err)
+        debugger.Println("ser.Shutdown:", err)
     }
 }

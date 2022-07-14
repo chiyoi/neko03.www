@@ -1,12 +1,13 @@
 package handlers
 
 import (
-    "log"
     "net/http"
     "os"
+
+    "neko03/utils"
 )
 
-var debugger = log.New(os.Stderr, "[handlers] ", log.Ldate|log.Ltime|log.LUTC|log.Lshortfile)
+var debugger = utils.NewLogger(os.Stderr, "[neko03/handlers] ")
 
 func PathAssert(path string, handler http.HandlerFunc) (pattern string, handler_ http.HandlerFunc) {
     return path, func(w http.ResponseWriter, r *http.Request) {

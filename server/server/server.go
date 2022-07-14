@@ -2,8 +2,9 @@ package server
 
 import (
     "crypto/tls"
-    "golang.org/x/crypto/acme/autocert"
     "net/http"
+
+    "golang.org/x/crypto/acme/autocert"
 )
 
 func NewCertManager(hosts []string) (certManager *autocert.Manager) {
