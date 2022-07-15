@@ -40,20 +40,22 @@ func init() {
 
     mux = http.NewServeMux()
     mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-        if strings.ToLower(r.Host) == "neko03.com" {
+        host := strings.ToLower(r.Host)
+        switch host {
+        case "neko03.com":
             r.URL.Scheme = "https"
             r.URL.Host = "www.neko03.com"
             http.Redirect(w, r, r.URL.String(), http.StatusPermanentRedirect)
             return
+        case "www.neko03.com":
+            handler, _ := pageMux.Handler(r)
+            handler.ServeHTTP(w, r)
         }
         if r.URL.Path != "/" {
             http.NotFound(w, r)
             return
         }
-        switch host := strings.ToLower(r.Host); host {
-        case "www.neko03.com":
-            handler, _ := pageMux.Handler(r)
-            handler.ServeHTTP(w, r)
+        switch host {
         case "twitter.neko03.com":
             http.Redirect(w, r, "https://twitter.com/chiyoi2140/", http.StatusPermanentRedirect)
         case "github.neko03.com":
