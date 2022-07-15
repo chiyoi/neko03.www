@@ -30,7 +30,14 @@ func init() {
     hosts = []string{"www.neko03.com", "neko03.com"}
 
     pageMux := http.NewServeMux()
-    pageMux.HandleFunc(handlers.FileServer("/disk", "./disk"))
+    pageMux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+        if r.URL.Path != "/" {
+            http.NotFound(w, r)
+            return
+        }
+        http.Redirect(w, r, "/chiyoi/", http.StatusMovedPermanently)
+    })
+    pageMux.HandleFunc(handlers.FileServer("/disk/", "./disk"))
     pageMux.HandleFunc(handlers.Favicon("./assets/chiyoi/icon.png"))
     pageMux.HandleFunc(handlers.JSPageWithAssets("chiyoi"))
     pageMux.HandleFunc(nacho.Nacho())
