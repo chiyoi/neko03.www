@@ -50,6 +50,7 @@ func init() {
         case "www.neko03.com":
             handler, _ := pageMux.Handler(r)
             handler.ServeHTTP(w, r)
+            return
         }
         if r.URL.Path != "/" {
             http.NotFound(w, r)
