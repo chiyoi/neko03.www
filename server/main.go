@@ -27,7 +27,7 @@ var (
 )
 
 func init() {
-    hosts = []string{"www.neko03.com"}
+    hosts = []string{"www.neko03.com", "neko03.com"}
 
     apiMux = http.NewServeMux()
     apiMux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
