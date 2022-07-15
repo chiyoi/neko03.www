@@ -31,8 +31,7 @@ func init() {
 
     apiMux = http.NewServeMux()
     apiMux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-        debugger.Println(r.URL.Host, r.URL.Hostname())
-        if strings.ToLower(r.URL.Hostname()) == "neko03.com" {
+        if strings.ToLower(r.Host) == "neko03.com" {
             r.URL.Scheme = "https"
             r.URL.Host = "www.neko03.com"
             http.Redirect(w, r, r.URL.String(), http.StatusPermanentRedirect)
@@ -42,7 +41,7 @@ func init() {
             http.NotFound(w, r)
             return
         }
-        switch host := strings.ToLower(r.URL.Hostname()); host {
+        switch host := strings.ToLower(r.Host); host {
         case "twitter.neko03.com":
             http.Redirect(w, r, "https://twitter.com/chiyoi2140/", http.StatusPermanentRedirect)
         case "github.neko03.com":
@@ -56,7 +55,7 @@ func init() {
         }
     })
     apiMux.HandleFunc("/gopkg/", func(w http.ResponseWriter, r *http.Request) {
-        if strings.ToLower(r.URL.Hostname()) != "neko03.com" {
+        if strings.ToLower(r.Host) != "neko03.com" {
             http.NotFound(w, r)
             return
         }
