@@ -53,38 +53,29 @@ func init() {
             r.URL.Scheme = "https"
             r.URL.Host = "www.neko03.com"
             http.Redirect(w, r, r.URL.String(), http.StatusMovedPermanently)
-            return
         case "www.neko03.com":
             handler, _ := pageMux.Handler(r)
             handler.ServeHTTP(w, r)
-            return
-        }
-        if r.URL.Path != "/" {
-            http.NotFound(w, r)
-            return
-        }
-        switch host {
+        case "github.neko03.com":
+            r.URL.Scheme = "https"
+            r.URL.Host = "github.com"
+            r.URL.Path = path.Join("/chiyoi", r.URL.Path)
+            http.Redirect(w, r, r.URL.String(), http.StatusMovedPermanently)
         case "twitter.neko03.com":
             http.Redirect(w, r, "https://twitter.com/chiyoi2140/", http.StatusMovedPermanently)
-        case "github.neko03.com":
-            http.Redirect(w, r, "https://github.com/chiyoi/", http.StatusMovedPermanently)
         case "chiyoi.neko03.com":
+            if utils.PathAssert(w, r, "/") {
+                return
+            }
             http.Redirect(w, r, "https://www.neko03.com/chiyoi/", http.StatusMovedPermanently)
         case "nacho.neko03.com":
+            if utils.PathAssert(w, r, "/") {
+                return
+            }
             http.Redirect(w, r, "https://www.neko03.com/nacho/", http.StatusMovedPermanently)
         default:
             http.NotFound(w, r)
         }
-    })
-    mux.HandleFunc("/gopkg/", func(w http.ResponseWriter, r *http.Request) {
-        if strings.ToLower(r.Host) != "neko03.com" {
-            http.NotFound(w, r)
-            return
-        }
-        r.URL.Scheme = "https"
-        r.URL.Host = "github.com"
-        r.URL.Path = path.Join("/chiyoi/", r.URL.Path)
-        http.Redirect(w, r, r.URL.String(), http.StatusMovedPermanently)
     })
 
     var certManager = server.NewCertManager(hosts, "cert-cache")
