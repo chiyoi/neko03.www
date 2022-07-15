@@ -10,7 +10,6 @@ RUN CGO_ENABLED=0 go build -o ./target/www
 FROM node:12.22.12
 
 WORKDIR /build
-RUN npm update -g npm
 COPY ./view/package.json ./view/package-lock.json ./
 RUN npm install
 
