@@ -44,7 +44,7 @@ window.onload = function() {
         })
         .setAttr("src", "./assets/twi_button_img.svg")
     twi_button.onclick = function() {
-        location.href = "/chiyoi/twitter"
+        location.href = "https://twitter.neko03.com/"
     }
 
     let upload_button = utils.append(app, "upload_button")
