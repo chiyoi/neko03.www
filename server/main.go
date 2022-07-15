@@ -59,28 +59,28 @@ func init() {
                 r.URL.Path = path.Join("/chiyoi", r.URL.Path)
             }
             http.Redirect(w, r, r.URL.String(), http.StatusMovedPermanently)
-            return
         case "www.neko03.com":
             handler, _ := pageMux.Handler(r)
             handler.ServeHTTP(w, r)
-            return
-        }
-        if r.URL.Scheme == "https" || r.URL.Path != "/" {
-            http.NotFound(w, r)
-            return
-        }
-        switch host {
-        case "github.neko03.com":
-            http.Redirect(w, r, "https://github.com/chiyoi/", http.StatusMovedPermanently)
-        case "twitter.neko03.com":
-            http.Redirect(w, r, "https://twitter.com/chiyoi2140/", http.StatusMovedPermanently)
-        case "chiyoi.neko03.com":
-            http.Redirect(w, r, "https://www.neko03.com/chiyoi/", http.StatusMovedPermanently)
-        case "nacho.neko03.com":
-            http.Redirect(w, r, "https://www.neko03.com/nacho/", http.StatusMovedPermanently)
         default:
-            http.NotFound(w, r)
+            if r.URL.Path != "/" {
+                http.NotFound(w, r)
+                return
+            }
+            switch host {
+            case "github.neko03.com":
+                http.Redirect(w, r, "https://github.com/chiyoi/", http.StatusMovedPermanently)
+            case "twitter.neko03.com":
+                http.Redirect(w, r, "https://twitter.com/chiyoi2140/", http.StatusMovedPermanently)
+            case "chiyoi.neko03.com":
+                http.Redirect(w, r, "https://www.neko03.com/chiyoi/", http.StatusMovedPermanently)
+            case "nacho.neko03.com":
+                http.Redirect(w, r, "https://www.neko03.com/nacho/", http.StatusMovedPermanently)
+            default:
+                http.NotFound(w, r)
+            }
         }
+
     })
 
     var certManager = server.NewCertManager(hosts, "cert-cache")
