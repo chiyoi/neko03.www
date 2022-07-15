@@ -10,11 +10,12 @@ import (
 )
 
 func UploadFile(name string, saveDir string) (pattern string, handler http.HandlerFunc) {
-    var _, page = JSPage(name)
-    return "/" + name + "/", func(w http.ResponseWriter, r *http.Request) {
+    var page http.Handler
+    pattern, page = JSPage(name)
+    handler = func(w http.ResponseWriter, r *http.Request) {
         switch r.Method {
         case http.MethodGet:
-            page(w, r)
+            page.ServeHTTP(w, r)
         case http.MethodPut, http.MethodPost:
             data, err := ioutil.ReadAll(r.Body)
             if err != nil {
@@ -46,4 +47,5 @@ func UploadFile(name string, saveDir string) (pattern string, handler http.Handl
             http.Error(w, "405 method not allowed", http.StatusMethodNotAllowed)
         }
     }
+    return
 }

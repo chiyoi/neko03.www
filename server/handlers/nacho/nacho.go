@@ -24,8 +24,8 @@ type imgT struct {
 }
 
 func Nacho() (pattern string, handler http.HandlerFunc) {
-    var name = "nacho"
-    var _, page = handlers.JSPageWithAssets(name)
+    var page http.Handler
+    pattern, page = handlers.JSPageWithAssets("nacho")
     filepaths, err := filepath.Glob(path.Join("assets", "nacho", "images", "*"))
     if err != nil {
         debugger.Printf("filepath.Glob:", err)
@@ -50,7 +50,7 @@ func Nacho() (pattern string, handler http.HandlerFunc) {
     if err != nil {
         debugger.Println("json.Marshal:", err)
     }
-    return "/" + name + "/", func(w http.ResponseWriter, r *http.Request) {
+    handler = func(w http.ResponseWriter, r *http.Request) {
         paths := strings.Split(r.URL.Path, "/")
         if len(paths) <= 1 {
             handlers.InternalServerError(w, r)
@@ -64,7 +64,8 @@ func Nacho() (pattern string, handler http.HandlerFunc) {
                 debugger.Println("w.Write:", err)
             }
         default:
-            page(w, r)
+            page.ServeHTTP(w, r)
         }
     }
+    return
 }

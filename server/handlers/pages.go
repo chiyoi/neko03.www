@@ -32,7 +32,8 @@ func pathSplit(path string) (paths []string, err error) {
 
 func JSPage(name string) (pattern string, handler http.HandlerFunc) {
     var view = fmt.Sprintf(baseHTML, "/"+name+"/main.js")
-    return "/" + name + "/", func(w http.ResponseWriter, r *http.Request) {
+    pattern = "/" + name + "/"
+    handler = func(w http.ResponseWriter, r *http.Request) {
         paths, err := pathSplit(r.URL.Path)
         if err != nil {
             debugger.Println("pathSplit:", err)
@@ -49,11 +50,13 @@ func JSPage(name string) (pattern string, handler http.HandlerFunc) {
             debugger.Println("unexpected path:", paths[0])
         }
     }
+    return
 }
 
 func JSPageWithAssets(name string) (pattern string, handler http.HandlerFunc) {
-    var _, page = JSPage(name)
-    return "/" + name + "/", func(w http.ResponseWriter, r *http.Request) {
+    var page http.Handler
+    pattern, page = JSPage(name)
+    handler = func(w http.ResponseWriter, r *http.Request) {
         paths, err := pathSplit(r.URL.Path)
         if err != nil {
             InternalServerError(w, r)
@@ -63,7 +66,8 @@ func JSPageWithAssets(name string) (pattern string, handler http.HandlerFunc) {
         case "assets":
             http.ServeFile(w, r, path.Join("assets", name, path.Join(paths[1:]...)))
         default:
-            page(w, r)
+            page.ServeHTTP(w, r)
         }
     }
+    return
 }
