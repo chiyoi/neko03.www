@@ -23,14 +23,23 @@ var (
 var (
     hosts                   []string
     httpServer, httpsServer *http.Server
-    pageMux, apiMux         *http.ServeMux
+    mux                     *http.ServeMux
 )
 
 func init() {
     hosts = []string{"www.neko03.com", "neko03.com"}
 
-    apiMux = http.NewServeMux()
-    apiMux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+    pageMux := http.NewServeMux()
+    pageMux.HandleFunc(handlers.FileServer("/disk", "./disk"))
+    pageMux.HandleFunc(handlers.Favicon("./assets/chiyoi/icon.png"))
+    pageMux.HandleFunc(handlers.JSPageWithAssets("chiyoi"))
+    pageMux.HandleFunc(nacho.Nacho())
+    pageMux.HandleFunc(handlers.JSPageWithAssets("jigokutsuushin"))
+    pageMux.HandleFunc(handlers.JSPageWithAssets("shigure"))
+    pageMux.HandleFunc(handlers.UploadFile("upload", "./disk"))
+
+    mux = http.NewServeMux()
+    mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
         if strings.ToLower(r.Host) == "neko03.com" {
             r.URL.Scheme = "https"
             r.URL.Host = "www.neko03.com"
@@ -42,6 +51,9 @@ func init() {
             return
         }
         switch host := strings.ToLower(r.Host); host {
+        case "www.neko03.com":
+            handler, _ := pageMux.Handler(r)
+            handler.ServeHTTP(w, r)
         case "twitter.neko03.com":
             http.Redirect(w, r, "https://twitter.com/chiyoi2140/", http.StatusPermanentRedirect)
         case "github.neko03.com":
@@ -54,7 +66,7 @@ func init() {
             http.NotFound(w, r)
         }
     })
-    apiMux.HandleFunc("/gopkg/", func(w http.ResponseWriter, r *http.Request) {
+    mux.HandleFunc("/gopkg/", func(w http.ResponseWriter, r *http.Request) {
         if strings.ToLower(r.Host) != "neko03.com" {
             http.NotFound(w, r)
             return
@@ -65,21 +77,9 @@ func init() {
         http.Redirect(w, r, r.URL.String(), http.StatusPermanentRedirect)
     })
 
-    pageMux = http.NewServeMux()
-    pageMux.HandleFunc(handlers.FileServer("/disk", "./disk"))
-    pageMux.HandleFunc(handlers.PathAssert("/", func(w http.ResponseWriter, r *http.Request) {
-        http.Redirect(w, r, "/chiyoi", http.StatusPermanentRedirect)
-    }))
-    pageMux.HandleFunc(handlers.Favicon("./assets/chiyoi/icon.png"))
-    pageMux.HandleFunc(handlers.JSPageWithAssets("chiyoi"))
-    pageMux.HandleFunc(nacho.Nacho())
-    pageMux.HandleFunc(handlers.JSPageWithAssets("jigokutsuushin"))
-    pageMux.HandleFunc(handlers.JSPageWithAssets("shigure"))
-    pageMux.HandleFunc(handlers.UploadFile("upload", "./disk"))
-
     var certManager = server.NewCertManager(hosts, "cert-cache")
-    httpServer = server.NewHttpServer(certManager.HTTPHandler(apiMux))
-    httpsServer = server.NewHttpsServer(pageMux, certManager)
+    httpServer = server.NewHttpServer(certManager.HTTPHandler(mux))
+    httpsServer = server.NewHttpsServer(mux, certManager)
 }
 
 func main() {
