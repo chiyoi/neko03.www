@@ -4,7 +4,6 @@ import (
     "bytes"
     "io"
     "log"
-    "net/http"
     "runtime"
 )
 
@@ -28,12 +27,4 @@ func (l *logger) Write(msg []byte) (n int, err error) {
     pieces[4] = []byte("(" + funcName + ")")
     n, err = l.out.Write(bytes.Join(pieces, []byte{' '}))
     return
-}
-
-func PathAssert(w http.ResponseWriter, r *http.Request, path string) bool {
-    if r.URL.Path != path {
-        http.NotFound(w, r)
-        return false
-    }
-    return true
 }
