@@ -61,7 +61,6 @@ func init() {
                     dst.Host = "www.neko03.com"
                 }
                 http.Redirect(w, r, dst.String(), http.StatusMovedPermanently)
-                return
             case "www.neko03.com":
                 if r.TLS == nil {
                     dst := r.URL
@@ -72,25 +71,23 @@ func init() {
                 }
                 handler, _ := pageMux.Handler(r)
                 handler.ServeHTTP(w, r)
-                return
             default:
-                if r.URL.Path == "/" {
-                    switch host {
-                    case "github.neko03.com":
-                        http.Redirect(w, r, "https://github.com/chiyoi/", http.StatusMovedPermanently)
-                    case "twitter.neko03.com":
-                        http.Redirect(w, r, "https://twitter.com/chiyoi2140/", http.StatusMovedPermanently)
-                    case "chiyoi.neko03.com":
-                        http.Redirect(w, r, "https://www.neko03.com/chiyoi/", http.StatusMovedPermanently)
-                    case "nacho.neko03.com":
-                        http.Redirect(w, r, "https://www.neko03.com/nacho/", http.StatusMovedPermanently)
-                    default:
-                        handlers.Teapot(w, r)
-                    }
+                if r.URL.Path != "/" {
+                    handlers.Teapot(w, r)
                     return
                 }
-                handlers.Teapot(w, r)
-                return
+                switch host {
+                case "github.neko03.com":
+                    http.Redirect(w, r, "https://github.com/chiyoi/", http.StatusMovedPermanently)
+                case "twitter.neko03.com":
+                    http.Redirect(w, r, "https://twitter.com/chiyoi2140/", http.StatusMovedPermanently)
+                case "chiyoi.neko03.com":
+                    http.Redirect(w, r, "https://www.neko03.com/chiyoi/", http.StatusMovedPermanently)
+                case "nacho.neko03.com":
+                    http.Redirect(w, r, "https://www.neko03.com/nacho/", http.StatusMovedPermanently)
+                default:
+                    handlers.Teapot(w, r)
+                }
             }
         })
     } else {
