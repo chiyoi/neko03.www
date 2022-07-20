@@ -24,19 +24,10 @@ var (
     hosts                   []string
     httpServer, httpsServer *http.Server
     mux                     *http.ServeMux
-
-    httpHostname, httpsHostname string
 )
 
 func init() {
-    if os.Getenv("ENVIRONMENT") == "prod" {
-        httpHostname = "neko03.com"
-        httpsHostname = "www.neko03.com"
-    } else {
-        httpHostname = "localhost:8088"
-        httpsHostname = "localhost:4433"
-    }
-    hosts = []string{httpHostname, httpsHostname}
+    hosts = []string{"www.neko03.com", "neko03.com"}
 
     pageMux := http.NewServeMux()
     pageMux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -55,42 +46,53 @@ func init() {
     pageMux.HandleFunc(handlers.UploadFile("upload", "./disk"))
 
     mux = http.NewServeMux()
-    mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-        host := strings.ToLower(r.Host)
-        switch host {
-        case httpHostname:
-            r.URL.Scheme = "https"
-            switch r.URL.Path {
-            case "/":
-                r.URL.Host = "www.neko03.com"
-            case "/github/":
-                r.URL.Host = "github.com"
-                r.URL.Path = path.Join("/chiyoi", r.URL.Path)
-            }
-            http.Redirect(w, r, r.URL.String(), http.StatusMovedPermanently)
-        case httpsHostname:
-            handler, _ := pageMux.Handler(r)
-            handler.ServeHTTP(w, r)
-        default:
-            if r.URL.Path != "/" {
+    if os.Getenv("ENVIRONMENT") == "prod" {
+        mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+            host := strings.ToLower(r.Host)
+            switch host {
+            case "neko03.com":
+                dst := r.URL
+                dst.Scheme = "https"
+                switch r.URL.Path {
+                case "/github/":
+                    dst.Host = "github.com"
+                    dst.Path = path.Join("/chiyoi", r.URL.Path)
+                default:
+                    dst.Host = "www.neko03.com"
+                }
+                http.Redirect(w, r, dst.String(), http.StatusMovedPermanently)
+            case "www.neko03.com":
+                if r.TLS == nil {
+                    dst := r.URL
+                    dst.Scheme = "https"
+                    dst.Host = host
+                    http.Redirect(w, r, dst.String(), http.StatusMovedPermanently)
+                }
+                handler, _ := pageMux.Handler(r)
+                handler.ServeHTTP(w, r)
+            default:
+                if r.URL.Path == "/" {
+                    switch host {
+                    case "github.neko03.com":
+                        http.Redirect(w, r, "https://github.com/chiyoi/", http.StatusMovedPermanently)
+                    case "twitter.neko03.com":
+                        http.Redirect(w, r, "https://twitter.com/chiyoi2140/", http.StatusMovedPermanently)
+                    case "chiyoi.neko03.com":
+                        http.Redirect(w, r, "https://www.neko03.com/chiyoi/", http.StatusMovedPermanently)
+                    case "nacho.neko03.com":
+                        http.Redirect(w, r, "https://www.neko03.com/nacho/", http.StatusMovedPermanently)
+                    default:
+                        handlers.Teapot(w, r)
+                    }
+                    return
+                }
                 handlers.Teapot(w, r)
                 return
             }
-            switch host {
-            case "github.neko03.com":
-                http.Redirect(w, r, "https://github.com/chiyoi/", http.StatusMovedPermanently)
-            case "twitter.neko03.com":
-                http.Redirect(w, r, "https://twitter.com/chiyoi2140/", http.StatusMovedPermanently)
-            case "chiyoi.neko03.com":
-                http.Redirect(w, r, "https://www.neko03.com/chiyoi/", http.StatusMovedPermanently)
-            case "nacho.neko03.com":
-                http.Redirect(w, r, "https://www.neko03.com/nacho/", http.StatusMovedPermanently)
-            default:
-                handlers.Teapot(w, r)
-            }
-            return
-        }
-    })
+        })
+    } else {
+        mux.HandleFunc("/", pageMux.ServeHTTP)
+    }
 
     var certManager = server.NewCertManager(hosts, "cert-cache")
     httpServer = server.NewHttpServer(certManager.HTTPHandler(mux))
