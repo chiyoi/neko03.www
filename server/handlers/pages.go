@@ -47,7 +47,6 @@ func JSPage(name string) (pattern string, handler http.HandlerFunc) {
             http.ServeFile(w, r, path.Join("view", name+".js"))
         default:
             Teapot(w, r)
-            return
         }
     }
     return
