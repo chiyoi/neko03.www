@@ -61,15 +61,18 @@ func init() {
                     dst.Host = "www.neko03.com"
                 }
                 http.Redirect(w, r, dst.String(), http.StatusMovedPermanently)
+                return
             case "www.neko03.com":
                 if r.TLS == nil {
                     dst := r.URL
                     dst.Scheme = "https"
                     dst.Host = host
                     http.Redirect(w, r, dst.String(), http.StatusMovedPermanently)
+                    return
                 }
                 handler, _ := pageMux.Handler(r)
                 handler.ServeHTTP(w, r)
+                return
             default:
                 if r.URL.Path == "/" {
                     switch host {
