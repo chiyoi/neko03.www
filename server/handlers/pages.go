@@ -46,8 +46,8 @@ func JSPage(name string) (pattern string, handler http.HandlerFunc) {
         case "main.js":
             http.ServeFile(w, r, path.Join("view", name+".js"))
         default:
-            http.NotFound(w, r)
-            debugger.Println("unexpected path:", paths[0])
+            Teapot(w, r)
+            return
         }
     }
     return

@@ -24,15 +24,24 @@ var (
     hosts                   []string
     httpServer, httpsServer *http.Server
     mux                     *http.ServeMux
+
+    httpHostname, httpsHostname string
 )
 
 func init() {
-    hosts = []string{"www.neko03.com", "neko03.com"}
+    if os.Getenv("ENVIRONMENT") == "prod" {
+        httpHostname = "neko03.com"
+        httpsHostname = "www.neko03.com"
+    } else {
+        httpHostname = "localhost:8088"
+        httpsHostname = "localhost:4433"
+    }
+    hosts = []string{httpHostname, httpsHostname}
 
     pageMux := http.NewServeMux()
     pageMux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
         if r.URL.Path != "/" {
-            http.NotFound(w, r)
+            handlers.Teapot(w, r)
             return
         }
         http.Redirect(w, r, "/chiyoi/", http.StatusMovedPermanently)
@@ -49,7 +58,7 @@ func init() {
     mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
         host := strings.ToLower(r.Host)
         switch host {
-        case "neko03.com":
+        case httpHostname:
             r.URL.Scheme = "https"
             switch r.URL.Path {
             case "/":
@@ -59,12 +68,12 @@ func init() {
                 r.URL.Path = path.Join("/chiyoi", r.URL.Path)
             }
             http.Redirect(w, r, r.URL.String(), http.StatusMovedPermanently)
-        case "www.neko03.com":
+        case httpsHostname:
             handler, _ := pageMux.Handler(r)
             handler.ServeHTTP(w, r)
         default:
             if r.URL.Path != "/" {
-                http.NotFound(w, r)
+                handlers.Teapot(w, r)
                 return
             }
             switch host {
@@ -77,10 +86,10 @@ func init() {
             case "nacho.neko03.com":
                 http.Redirect(w, r, "https://www.neko03.com/nacho/", http.StatusMovedPermanently)
             default:
-                http.NotFound(w, r)
+                handlers.Teapot(w, r)
             }
+            return
         }
-
     })
 
     var certManager = server.NewCertManager(hosts, "cert-cache")

@@ -25,3 +25,7 @@ func Favicon(filepath string) (pattern string, handler http.HandlerFunc) {
 func InternalServerError(w http.ResponseWriter, _ *http.Request) {
     http.Error(w, "500 internal server error", http.StatusInternalServerError)
 }
+
+func Teapot(w http.ResponseWriter, _ *http.Request) {
+    http.Error(w, "418 I'm a teapot", http.StatusTeapot)
+}
