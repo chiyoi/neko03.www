@@ -25,6 +25,7 @@ func (l *logger) Write(msg []byte) (n int, err error) {
     pieces := bytes.SplitN(msg, []byte{' '}, 5)
     pieces = append(pieces, pieces[4])
     pieces[4] = []byte("(" + funcName + ")")
+    pieces[0] = append([]byte{'\r'}, pieces[0]...)
     n, err = l.out.Write(bytes.Join(pieces, []byte{' '}))
     return
 }
