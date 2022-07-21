@@ -1,4 +1,4 @@
-# neko03.www
+# Neko03
 chiyoi's testing project for web develop.
 * Built with *go* server and *typescript* pages
 ---
