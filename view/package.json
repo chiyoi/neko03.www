@@ -1,6 +1,6 @@
 {
-  "name": "neko03.view",
-  "version": "1.0.0",
+  "name": "neko03-view",
+  "version": "0.0.0",
   "license": "ISC",
   "scripts": {
     "build": "webpack"
