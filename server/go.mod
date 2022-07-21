@@ -1,4 +1,4 @@
-module github.com/chiyoi/Neko03/server
+module github.com/chiyoi/neko03/server
 
 go 1.18
 
