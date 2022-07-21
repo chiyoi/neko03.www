@@ -130,8 +130,8 @@ func main() {
         }()
     }
 
-    var sig = make(chan os.Signal)
-    signal.Notify(sig, os.Interrupt)
+    var sig = make(chan os.Signal, 1)
+    signal.Notify(sig, os.Interrupt, os.Kill)
 
     interrupt := <-sig
     logger.Println(interrupt)

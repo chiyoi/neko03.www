@@ -1,7 +1,6 @@
 # neko03.www
 chiyoi's testing project for web develop.
-* Built with *go* backend, using standerd package, no framework now.
-* Has a *typescript* frontend, using vanilla *javascript*(compiled from *typescript*), no framework now.
+* Built with *go* server and *typescript* pages
 ---
 websites:
 * [main page](https://www.neko03.com/chiyoi/)
