@@ -1,4 +1,4 @@
-module neko03
+module github.com/chiyoi/Neko03
 
 go 1.18
 

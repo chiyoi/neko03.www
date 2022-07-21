@@ -11,8 +11,8 @@ import (
     "path/filepath"
     "strings"
 
-    "neko03/handlers"
-    "neko03/utils"
+    "github.com/chiyoi/Neko03/handlers"
+    "github.com/chiyoi/Neko03/utils"
 )
 
 var debugger = utils.NewLogger(os.Stderr, "[neko03/handlers/nacho] ")

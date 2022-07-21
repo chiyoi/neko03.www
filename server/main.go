@@ -10,10 +10,10 @@ import (
     "syscall"
     "time"
 
-    "neko03/handlers"
-    "neko03/handlers/nacho"
-    "neko03/server"
-    "neko03/utils"
+    "github.com/chiyoi/Neko03/handlers"
+    "github.com/chiyoi/Neko03/handlers/nacho"
+    "github.com/chiyoi/Neko03/server"
+    "github.com/chiyoi/Neko03/utils"
 )
 
 var (

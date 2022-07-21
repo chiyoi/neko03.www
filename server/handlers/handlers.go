@@ -4,7 +4,7 @@ import (
     "net/http"
     "os"
 
-    "neko03/utils"
+    "github.com/chiyoi/Neko03/utils"
 )
 
 var debugger = utils.NewLogger(os.Stderr, "[neko03/handlers] ")
