@@ -7,6 +7,7 @@ import (
     "os/signal"
     "path"
     "strings"
+    "syscall"
     "time"
 
     "neko03/handlers"
@@ -131,7 +132,7 @@ func main() {
     }
 
     var sig = make(chan os.Signal, 1)
-    signal.Notify(sig, os.Interrupt, os.Kill)
+    signal.Notify(sig, syscall.SIGINT, syscall.SIGHUP)
 
     interrupt := <-sig
     logger.Println(interrupt)
