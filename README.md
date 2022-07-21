@@ -4,8 +4,8 @@ chiyoi's testing project for web develop.
 * Has a *typescript* frontend, using vanilla *javascript*(compiled from *typescript*), no framework now.
 ---
 websites:
-* [main page](chiyoi.neko03.com)
-* [neta of some anime](jigokutsuushin.neko03.com)
-* [scrolling photos](nacho.neko03.com)
-* [neta of some game](shigure.neko03.com)
-* [a simple file server](disk.neko03.com)
+* [main page](https://www.neko03.com/chiyoi/)
+* [neta of some anime](https://www.neko03.com/jigokutsuushin/)
+* [scrolling photos](https://www.neko03.com/nacho/)
+* [neta of some game](https://www.neko03.com/shigure/)
+* [a simple file server](https://www.neko03.com/disk/)
